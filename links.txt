@@ -1,6 +1,8 @@
   https://www.gamlss.com/
   https://docs.ufpr.br/~taconeli/CE06218/CE06218.html
   https://en.wikipedia.org/wiki/Generalized_additive_model_for_location,_scale_and_shape
+  https://cran.r-project.org/web/packages/ggridges/vignettes/gallery.html
+  https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html
   https://stats.stackexchange.com/questions/tagged/gamlss
   https://github.com/xi2pi/gamlss
   
