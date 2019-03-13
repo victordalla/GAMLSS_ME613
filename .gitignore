@@ -37,3 +37,4 @@ rsconnect/
 
 # PDFs
 *.pdf
+.Rproj.user
