@@ -37,4 +37,9 @@ rsconnect/
 
 # PDFs
 *.pdf
+
+# R Project
 .Rproj.user
+
+# Readings
+**/Readings
