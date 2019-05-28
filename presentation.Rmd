@@ -41,43 +41,76 @@ options(
 
 # Introdução
 
-## Notação e Modelo linear simples homocedástico
+## Notação
 
-- Variável reposta: $\mathbf{Y} = (Y_1, ..., Y_n)'$
-- Variáveis explicativas (ou preditores): $\mathbf{X_1}, ..., \mathbf{X_p}$, $p \ge 1$
-- A média da resposta é uma função linear desta das observações: $E(\mathbf{Y}) = \beta_0 + \beta_1 \mathbf{X_1} + ... + \beta_p \mathbf{X_p} = \mathbf{X} \boldsymbol{\beta}$, onde $X$ é a matriz de planejamento (fixa)
-- A distribuição da resposta é homocedástica e normal: $\mathbf{Y} \sim N(\mathbf{X} \boldsymbol{\beta}, \sigma^2 \mathbf{I_n})$
+- Variável resposta: $\mathbf{Y} = (Y_1, ..., Y_n)'$, todas independentes entre si condicionadas nos parâmetros de suas distribuições
+- Variáveis explicativas (ou preditores): $\mathbf{X}_1, ..., \mathbf{X}_m$, $m \ge 1$, de mesmos tamanhos que $\mathbf{Y}$
+
+## Modelo linear simples homocedástico
+
+- Variável resposta: $\mathbf{Y} = (Y_1, ..., Y_n)'$, todas independentes entre si (condicionadas nas observações e nos parâmetros de suas distribuições)
+- Variáveis explicativas (ou preditores): $\mathbf{X}_1, ..., \mathbf{X}_m$, $m \ge 1$, de mesmo tamanho que $\mathbf{Y}$
+- A média da resposta condicionada nas observações é uma função linear desta: $E(\mathbf{Y} | \mathbf{X}) = \beta_0 + \beta_1 \mathbf{X_1} + ... + \beta_m \mathbf{X}_m = \mathbf{X} \boldsymbol{\beta}$, onde $X$ é a matriz de planejamento (fixa)
+- A distribuição da resposta condicionada nas observações é homocedástica e normal: $\mathbf{Y} | \mathbf{X} \sim N(\mathbf{X} \boldsymbol{\beta}, \sigma^2 \mathbf{I_n})$
 - $\boldsymbol{\beta}$ é estimado por Máximo Verossimilhança através de Quadrados Mínimos
 
-A notação acima será usada ao longo desta apresentção.
+As suposições feitas nos dois primeiros ítens e a notação acima serão mantidas ao longo desta apresentação.
 
 ---
 
 ## MLG
 
-O Modelo Linear Generalizado (MLG) consiste de três componentes:
+O Modelo Linear Generalizado (MLG ou GLM em inglês), introduzido por Nelder & Wedderburn (1972), consiste de três componentes:
 
 \begin{enumerate}
-  \item A variável resposta tem distribuição da família exponencial de parâmetros de localização natural e escala $theta$ e $\psi$, respecivamente:
+  \item A variável resposta tem função de densidade (probabilidade) da família exponencial de parâmetros de localização natural e escala ($\theta$ e $\psi$, respecivamente):
   \[
   f(y | \theta, \psi) = \exp \left( \frac{y\theta - b(\theta)}{a(\psi)} + c(y, \psi) \right)
   \]
-  \item Um preditor linear $\boldsymbol{\eta} = \eta(\mathbf{X}) = \beta_0 + \sum_{j=1}^{p} \beta_j \mathbf{X_j} = \mathbf{X} \boldsymbol{\beta}$
-  \item Uma função de ligação $g$ tal que $E(Y) = \mu = g^{-1}(\eta)$. Como na família exponencial $\mu = b'(\theta)$, $g^{-1} = b'$ é chamada *ligação canônica*.
+  \item Um preditor linear $\boldsymbol{\eta} = \eta(\mathbf{X}) = \beta_0 + \sum_{j=1}^{m} \beta_j \mathbf{X_j} = \mathbf{X} \boldsymbol{\beta}$
+  \item Uma função de ligação $g$ tal que $E(Y) = \mu = g^{-1}(\eta)$. Como na família exponencial $\mu = b'(\theta)$, $g^{-1} = b'$ é chamada \textit{ligação canônica}.
 \end{enumerate}
 
-- $\boldsymbol{\beta}$ é estimado por Máximo Verossimilhança através de métodos iterativos.
+- $\boldsymbol{\beta}$ pode ser estimado por Máximo Verossimilhança através de métodos iterativos (Iterative Weighted Least Squares, também chamado Adjusted Dependent Variable Regression, ambos em inglês).
+<!-- - $Var(\mathbf{Y} | \mathbf{X}) = a(\phi)b''(\theta) = a(\phi)v(\mu)$. Isso significa que é possível realizar ajustes num cenário heterocedástico. -->
 
 ---
 
 ## MAG
 
-- O Modelo Aditivo Generalizado (MAG) é uma generalização do MLG: $\beta_0 +  \sum_{j=1}^{p} \beta_j \mathbf{X_j}$ é substituído por $s_0 + \sum_{j=1}^{p} s_j(\mathbf{X_j})$, dando espaço para o uso de métodos não paramétricos, visto que $s_j$ são funções a serem estimadas (através de suavizadores, por exemplo).
+- O Modelo Aditivo Generalizado (MAG ou GAM em inglês), introduzido por Hastie & Tibshirani (1990), é uma generalização do MLG: $\beta_0 +  \sum_{j=1}^{m} \beta_j \mathbf{X_j}$ é substituído por $s_0 + \sum_{j=1}^{m} s_j(\mathbf{X}_j)$, dando espaço para o uso de métodos não paramétricos, visto que $s_j$ são funções a serem estimadas (através de suavizadores, por exemplo)
 
-- $s_j$ são estimados através do algoritmo *Backfitting* com a suposição de que $\boldsymbol{\eta} = s_0 + \sum_{j=1}^{p} s_j(\mathbf{X_j}) + \boldsymbol{\epsilon}$, com $\boldsymbol{\epsilon} \sim N(\mathbf{0}_{1 \times n}, \sigma^2 \mathbf{I}_n)$.
+- $s_j$ são estimados através do algoritmo *Backfitting* (Retroajuste), que minimiza $E[(\mathbf{Y} - s_0 - \sum_{j=1}^{m} s_j(\mathbf{X}_j))^2]$ e supõe que $\boldsymbol{\eta} = s_0 + \sum_{j=1}^{m} s_j(\mathbf{X_j}) + \boldsymbol{\epsilon}$, com $\boldsymbol{\epsilon} \sim N(\mathbf{0}_{1 \times n}, \sigma^2 \mathbf{I}_n)$
 
 
 # GAMLSS
 
+- Modelos Aditivos para Localização, Escala e Forma (GAMLSS em inglês) foi introduzido por Rigby & Stasinopoulos (2001, 2005) e Akantziliotou et al. (2002)
+- Mais gerais que MAG (e MLG):
+  - A função de densidade (probabilidade) condicionada nas observações da resposta são mais gerais que a da família exponencial
+  - É possível modelar todos os parâmetros da distribuição de $\mathbf{Y}$ de forma paramétrica, não paramétrica (suavizadores) ou por efeitos aleatórios
 
+---
 
+## Definição
+
+Sejam $\boldsymbol{\theta} = (\theta_1, ..., \theta_p)'$ os parâmetros da função de densidade (probabilidade) $f(y | \boldsymbol{\theta})$, em que $y_i | \boldsymbol{\theta}, i = 1, ..., n$ são independentes.
+
+Sejam $g_k, k = 1, ..., p$ funções de ligação conhecidas que relacionam os parâmetros com as observações:
+
+\[
+g_{k}\left(\boldsymbol{\theta}_{k}\right)=\boldsymbol{\eta}_{k}=\mathbf{X}_{k} \boldsymbol{\beta}_{k}+\sum_{j=1}^{J_{k}} \mathbf{Z}_{j k} \boldsymbol{\gamma}_{j k}
+\]
+
+- $\boldsymbol{\theta}_k$ e $\boldsymbol{\eta}$ (preditores) são vetores de tamanho $n$
+- $\boldsymbol{\beta}_k$ é um vetor de parâmetros de tamanho $J_k$
+- $\mathbf{X}_k$ são matrizes $n \times J_k$ de planejamento (conhecidas)
+- $\mathbf{Z}_{j k}$ são matrizes $n \times q_{j k}$ de planejamento fixas e $\boldsymbol{\gamma}_{j k}$ é uma v.a. de dimensão $q_{j k}$
+
+---
+
+- Geralmente são considerados no máximo quatro parâmetros: $\boldsymbol{\theta} = (\boldsymbol{\mu}, \boldsymbol{\sigma}, \boldsymbol{\tau}, \boldsymbol{\nu})$ sendo o primeiro de localização, o segundo de escala e os restantes de forma (assimetria e curtose, por exemplo).
+- O modelo pode ser reduzido para $g_{k}\left(\boldsymbol{\theta}_{k}\right) = \boldsymbol{\eta}_{k} = \mathbf{X}_{k} \boldsymbol{\beta}_{k}$, equivalente ao MLG (para cada $\boldsymbol{\theta}_k$)
+- Se $\mathbf{Z}_{j k} = \mathbf{I}_n$ e $\boldsymbol{\gamma}_{j k} =  \mathbf{h}_{j k} = h_{j k}\left(\mathbf{x}_{j k}\right)$, o modelo se reduz a $g_{k}\left(\boldsymbol{\theta}_{k}\right) = \boldsymbol{\eta}_{k} = \mathbf{X}_{k} \boldsymbol{\beta}_{k} + \sum_{j=1}^{J_{k}} h_{j k}\left(\mathbf{x}_{j k}\right)$, chamado GAMLSS Semiparamétrico
+
+---
