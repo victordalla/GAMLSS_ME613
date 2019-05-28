@@ -1,0 +1,83 @@
+---
+title: "Introdução ao GAMLSS com uma aplicação"
+author: "Victor Dalla, Jordão Bragantini"
+output: 
+  beamer_presentation:
+    fig_crop: false
+header-includes:
+  - \usepackage[brazil, english, portuguese]{babel}
+  - \usepackage[utf8]{inputenc}
+  - \usepackage[T1]{fontenc}
+  - \usepackage[fixlanguage]{babelbib}
+
+  - \usepackage{graphicx}
+  - \usepackage{wrapfig}
+  - \usepackage{pdfpages}
+  
+  - \usepackage{amsfonts}
+  - \usepackage{amssymb}
+  - \usepackage{amsmath}
+  
+  - \usepackage{subcaption}
+  - \usepackage{booktabs}
+  - \usepackage{caption}
+  - \usepackage{float}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE, 
+  message = FALSE,
+  warning = FALSE,
+  tidy.opts = list(width.cutoff = 60),
+  tidy = TRUE
+  )
+options(
+  OutDec = ",", 
+  knitr.table.format = "latex", 
+  xtable.comment = FALSE
+  )
+```
+
+# Introdução
+
+## Notação e Modelo linear simples homocedástico
+
+- Variável reposta: $\mathbf{Y} = (Y_1, ..., Y_n)'$
+- Variáveis explicativas (ou preditores): $\mathbf{X_1}, ..., \mathbf{X_p}$, $p \ge 1$
+- A média da resposta é uma função linear desta das observações: $E(\mathbf{Y}) = \beta_0 + \beta_1 \mathbf{X_1} + ... + \beta_p \mathbf{X_p} = \mathbf{X} \boldsymbol{\beta}$, onde $X$ é a matriz de planejamento (fixa)
+- A distribuição da resposta é homocedástica e normal: $\mathbf{Y} \sim N(\mathbf{X} \boldsymbol{\beta}, \sigma^2 \mathbf{I_n})$
+- $\boldsymbol{\beta}$ é estimado por Máximo Verossimilhança através de Quadrados Mínimos
+
+A notação acima será usada ao longo desta apresentção.
+
+---
+
+## MLG
+
+O Modelo Linear Generalizado (MLG) consiste de três componentes:
+
+\begin{enumerate}
+  \item A variável resposta tem distribuição da família exponencial de parâmetros de localização natural e escala $theta$ e $\psi$, respecivamente:
+  \[
+  f(y | \theta, \psi) = \exp \left( \frac{y\theta - b(\theta)}{a(\psi)} + c(y, \psi) \right)
+  \]
+  \item Um preditor linear $\boldsymbol{\eta} = \eta(\mathbf{X}) = \beta_0 + \sum_{j=1}^{p} \beta_j \mathbf{X_j} = \mathbf{X} \boldsymbol{\beta}$
+  \item Uma função de ligação $g$ tal que $E(Y) = \mu = g^{-1}(\eta)$. Como na família exponencial $\mu = b'(\theta)$, $g^{-1} = b'$ é chamada *ligação canônica*.
+\end{enumerate}
+
+- $\boldsymbol{\beta}$ é estimado por Máximo Verossimilhança através de métodos iterativos.
+
+---
+
+## MAG
+
+- O Modelo Aditivo Generalizado (MAG) é uma generalização do MLG: $\beta_0 +  \sum_{j=1}^{p} \beta_j \mathbf{X_j}$ é substituído por $s_0 + \sum_{j=1}^{p} s_j(\mathbf{X_j})$, dando espaço para o uso de métodos não paramétricos, visto que $s_j$ são funções a serem estimadas (através de suavizadores, por exemplo).
+
+- $s_j$ são estimados através do algoritmo *Backfitting* com a suposição de que $\boldsymbol{\eta} = s_0 + \sum_{j=1}^{p} s_j(\mathbf{X_j}) + \boldsymbol{\epsilon}$, com $\boldsymbol{\epsilon} \sim N(\mathbf{0}_{1 \times n}, \sigma^2 \mathbf{I}_n)$.
+
+
+# GAMLSS
+
+
+
