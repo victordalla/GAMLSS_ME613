@@ -43,8 +43,9 @@ options(
 
 ## Notação
 
-- Variável resposta: $\mathbf{Y} = (Y_1, ..., Y_n)'$, todas independentes entre si condicionadas nos parâmetros de suas distribuições
+- Variável resposta: $\mathbf{Y} = (Y_1, ..., Y_n)'$, todas independentes entre si (condicionadas nos parâmetros de suas distribuições)
 - Variáveis explicativas (ou preditores): $\mathbf{X}_1, ..., \mathbf{X}_m$, $m \ge 1$, de mesmos tamanhos que $\mathbf{Y}$
+- $X$ é a matriz de planejamento (fixa e com $n$ linhas), cujas colunas são transformações das variáveis explicativas
 
 ---
 
@@ -60,7 +61,7 @@ As suposições feitas nos dois primeiros ítens e a notação acima serão mant
 
 ---
 
-## MLG
+## MLG FICA???
 
 O Modelo Linear Generalizado (MLG ou GLM em inglês), introduzido por Nelder & Wedderburn (1972), consiste de três componentes:
 
@@ -80,7 +81,11 @@ O Modelo Linear Generalizado (MLG ou GLM em inglês), introduzido por Nelder & W
 
 ## MAG
 
-- O Modelo Aditivo Generalizado (MAG ou GAM em inglês), introduzido por Hastie & Tibshirani (1990), é uma generalização do MLG: $\beta_0 +  \sum_{j=1}^{m} \beta_j \mathbf{x}_j$ é substituído por $s_0 + \sum_{j=1}^{m} s_j(\mathbf{x}_j)$, dando espaço para o uso de métodos não paramétricos, visto que $s_j$ são funções a serem estimadas (através de suavizadores, por exemplo)
+- O Modelo Aditivo Generalizado (MAG ou GAM em inglês), introduzido por Hastie & Tibshirani (1990), é um modelo geral, que permite a modelagem de uma transformação da média da resposta condicionada nas observações de forma paramétrica, não paramétrica ou uma mistura de ambos. Ele consiste de três componentes:
+
+  1. A variável resposta tem função de densidade (probabilidade) da família exponencial
+  2. Um preditor linear $\boldsymbol{\eta} = \eta(\mathbf{X}) = s_0 + \sum_{j=1}^{m} s_j(\mathbf{x}_j)$
+  3. Uma função de ligação $g$ tal que $E(Y) = \mu = g^{-1}(\eta)$.
 
 - $s_j$ são estimados através do algoritmo *Backfitting* (Retroajuste), que minimiza $E[(\mathbf{Y} - s_0 - \sum_{j=1}^{m} s_j(\mathbf{x}_j))^2]$ e supõe que $\boldsymbol{\eta} = s_0 + \sum_{j=1}^{m} s_j(\mathbf{x}_j) + \boldsymbol{\epsilon}$, com $\boldsymbol{\epsilon} \sim N(\mathbf{0}_{1 \times n}, \sigma^2 \mathbf{I}_n)$
 
@@ -89,7 +94,7 @@ O Modelo Linear Generalizado (MLG ou GLM em inglês), introduzido por Nelder & W
 
 - Modelos Aditivos para Localização, Escala e Forma (GAMLSS em inglês) foi introduzido por Rigby & Stasinopoulos (2001, 2005) e Akantziliotou \textit{et al.} (2002)
 - Mais gerais que MAG (e MLG):
-  - A função de densidade (probabilidade) condicionada nas observações da resposta são mais gerais que a da família exponencial
+  - A família de funções de densidade (probabilidade) da resposta condicionada nas observações é mais geral que a família exponencial
   - É possível modelar todos os parâmetros da distribuição de $\mathbf{Y}$ de forma paramétrica, não paramétrica (suavizadores) ou por efeitos aleatórios
 
 ---
