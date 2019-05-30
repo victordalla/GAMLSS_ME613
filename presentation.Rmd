@@ -45,7 +45,7 @@ options(
 
 - Variável resposta: $\mathbf{Y} = (Y^1, ..., Y^n)'$, todas independentes entre si (condicionadas nos parâmetros de suas distribuições)
 <!-- - Variáveis explicativas (ou preditores): $\mathbf{x}_1, ..., \mathbf{x}_m$, $m \ge 1$, de mesmos tamanhos que $\mathbf{Y}$ -->
-- $\mathbf{X}$ é a matriz fixa $n \times J$ de planejamento, cujas colunas são transformações das variáveis explicativas, em que geralmente a primeira coluna é um vetor de 1s
+- $\mathbf{X}$ é a matriz fixa $n \times J$ de planejamento, cujas colunas são transformações das variáveis explicativas, em que geralmente a primeira coluna é um vetor de 1
 
 ---
 
@@ -57,7 +57,7 @@ options(
 
 ---
 
-## MLG FICA???
+## MLG 
 
 O Modelo Linear Generalizado (MLG ou GLM em inglês), introduzido por Nelder & Wedderburn (1972), consiste de três componentes:
 
@@ -75,7 +75,7 @@ O Modelo Linear Generalizado (MLG ou GLM em inglês), introduzido por Nelder & W
 
 ---
 
-## MAG
+## MAG FICA???
 
 O Modelo Aditivo Generalizado (MAG ou GAM em inglês), introduzido por Hastie & Tibshirani (1990), é um modelo mais geral e flexível, que permite a modelagem de uma transformação da média da resposta (condicionada nas observações) de forma paramétrica, não paramétrica ou uma mistura de ambos. Ele consiste de três componentes:
 
@@ -89,7 +89,7 @@ O Modelo Aditivo Generalizado (MAG ou GAM em inglês), introduzido por Hastie & 
 # GAMLSS
 
 - Modelos Aditivos para Localização, Escala e Forma (GAMLSS em inglês) foi introduzido por Rigby & Stasinopoulos (2001, 2005) e Akantziliotou \textit{et al.} (2002)
-- Mais gerais que MAG:
+- Mais gerais:
   - A família de funções de densidade (probabilidade) da resposta condicionada nas observações é mais geral que a família exponencial
   - É possível modelar todos os parâmetros da distribuição de $\mathbf{Y}$ de forma paramétrica, não paramétrica (suavizadores) ou por efeitos aleatórios
 
@@ -112,13 +112,13 @@ g_{k}\left(\boldsymbol{\theta}_{k}\right)=\boldsymbol{\eta}_{k}=\mathbf{X}_{k} \
 
 ---
 
-- Geralmente são considerados no máximo quatro parâmetros: $\boldsymbol{\theta} = (\boldsymbol{\mu}, \boldsymbol{\sigma}, \boldsymbol{\tau}, \boldsymbol{\nu})$ sendo o primeiro de localização, o segundo de escala e os restantes de forma (assimetria e curtose, por exemplo).
+- Geralmente são considerados no máximo quatro parâmetros: $\boldsymbol{\theta} = (\boldsymbol{\mu}, \boldsymbol{\sigma}, \boldsymbol{\nu}, \boldsymbol{\tau})$ sendo o primeiro de localização, o segundo de escala e os restantes de forma (assimetria e curtose, por exemplo).
 - O modelo pode ser reduzido para $g_{k}\left(\boldsymbol{\theta}_{k}\right) = \boldsymbol{\eta}_{k} = \mathbf{X}_{k} \boldsymbol{\beta}_{k}$, similar ao MLG
 - Se $\mathbf{Z}_{j k} = \mathbf{I}_n$ e $\boldsymbol{\gamma}_{j k} =  \mathbf{h}_{j k} = h_{j k}\left(\mathbf{x}_{j k}\right)$, o modelo pode ser reduzido a $g_{k}\left(\boldsymbol{\theta}_{k}\right) = \boldsymbol{\eta}_{k} = \sum_{j=1}^{J_{k}} h_{j k}\left(\mathbf{x}_{j k}\right)$, similar ao MAG
 
 ---
 
-## Estimação
+## Estimação FICA???
 
 - Suponha que $\boldsymbol{\gamma}_{j k} \sim N_{q_{j k}}(\mathbf{0}_{1 \times q_{j k}}, \mathbf{G}_{j k}^{-1})$, onde $\mathbf{G}_{j k}^{-1}$ é a inversa (generalizada) de uma matriz simétrica quadrada $\mathbf{G}_{j k} = \mathbf{G}_{j k}\left(\boldsymbol{\lambda}_{j k}\right)$ de ordem $q_{j k}$ e se $\mathbf{G}_{j k}$ for singular, então $\boldsymbol{\gamma}_{j k}$ tem distribuição imprópria proporcional a $\exp \left(-\frac{1}{2} \gamma_{j k}^{\mathrm{\top}} \mathbf{G}_{j k} \gamma_{j k}\right)$. 
     - $\boldsymbol{\lambda}_{j k}$ são hiperparâmetros, fixos ou estimados (\textit{c.f.} Rigby & Stasinopoulos, 2005)
@@ -134,7 +134,7 @@ Onde $\ell=\sum_{i=1}^{n} \log \left\{f\left(y^{i} | \boldsymbol{\theta}^{i}\rig
 
 ## Inferência
 
-- O devio global de um modelo GAMLSS (COM TERMOS PARAMÉTRICOS E COM OU SEM TERMOS ADITIVOS???) é $\mathrm{GD} = -2\ell(\hat{\boldsymbol{\theta}})$, onde $\hat{\boldsymbol{\theta}}$ é a estimativa de $\boldsymbol{\theta}$
+- O devio global de um modelo GAMLSS do tipo $g_{k}\left(\boldsymbol{\theta}_{k}\right) = \boldsymbol{\eta}_{k} = \mathbf{X}_{k} \boldsymbol{\beta}_{k}$ é $\mathrm{GD} = -2\ell(\hat{\boldsymbol{\theta}})$, onde $\hat{\boldsymbol{\theta}}$ é a estimativa de $\boldsymbol{\theta}$ e $\ell=\sum_{i=1}^{n} \log \left\{f\left(y^{i} | \boldsymbol{\theta}^{i}\right)\right\}$
 - Os graus de liberdade do erro são $\mathrm{df}_{\mathrm{e}} = n - \sum_{k=1}^{p} \mathrm{df}_{\theta_{k}}$, onde $\mathrm{df}_{\theta_{k}}$ são os graus de liberdade nos modelos preditores de $\theta_k, k = 1, ..., p$
 - Sejam $\mathcal{M}_0$ e $\mathcal{M}_1$ modelos GAMLSS de desvios globais $\mathrm{GD}_0$ e $\mathrm{GD}_1$ e graus de liberdade do erro $\mathrm{df}_{\mathrm{e0}}$ e $\mathrm{df}_{\mathrm{e1}}$, em que $\mathcal{M}_0$ está encaixado em $\mathcal{M}_1$
 
@@ -149,4 +149,5 @@ Onde $\ell=\sum_{i=1}^{n} \log \left\{f\left(y^{i} | \boldsymbol{\theta}^{i}\rig
 
 # Exemplo
 
+Exemplo deve realizar um MLG nos dados e apresentar algum indício de que o ajuste não foi bom. Em seguida, mostra-se o GAMLSS com uma distribuição melhor e fora da família exponencial, a possibilidade de modelar outros parâmetros e mostrar que o ajuste foi bom.
 
