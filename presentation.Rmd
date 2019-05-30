@@ -43,21 +43,17 @@ options(
 
 ## Notação
 
-- Variável resposta: $\mathbf{Y} = (Y_1, ..., Y_n)'$, todas independentes entre si (condicionadas nos parâmetros de suas distribuições)
-- Variáveis explicativas (ou preditores): $\mathbf{X}_1, ..., \mathbf{X}_m$, $m \ge 1$, de mesmos tamanhos que $\mathbf{Y}$
-- $X$ é a matriz de planejamento (fixa e com $n$ linhas), cujas colunas são transformações das variáveis explicativas
+- Variável resposta: $\mathbf{Y} = (Y^1, ..., Y^n)'$, todas independentes entre si (condicionadas nos parâmetros de suas distribuições)
+- Variáveis explicativas (ou preditores): $\mathbf{x}_1, ..., \mathbf{x}_m$, $m \ge 1$, de mesmos tamanhos que $\mathbf{Y}$
+- $\mathbf{X}$ é a matriz de planejamento (fixa e com $n$ linhas), cujas colunas são transformações das variáveis explicativas
 
 ---
 
 ## Modelo linear simples homocedástico FICA???
 
-- Variável resposta: $\mathbf{Y} = (Y_1, ..., Y_n)'$, todas independentes entre si (condicionadas nas observações e nos parâmetros de suas distribuições)
-- Variáveis explicativas (ou preditores): $\mathbf{x}_1, ..., \mathbf{x}_m$, $m \ge 1$, de mesmo tamanho que $\mathbf{Y}$
-- A média da resposta condicionada nas observações é uma função linear desta: $E(\mathbf{Y} | \mathbf{X}) = \beta_0 + \beta_1 \mathbf{x_1} + ... + \beta_m \mathbf{x}_m = \mathbf{X} \boldsymbol{\beta}$, onde $X$ é a matriz de planejamento (fixa)
-- A distribuição da resposta condicionada nas observações é homocedástica e normal: $\mathbf{Y} | \mathbf{X} \sim N(\mathbf{X} \boldsymbol{\beta}, \sigma^2 \mathbf{I_n})$
+- A média da resposta condicionada nas observações é uma função linear desta: $E(\mathbf{Y} | \mathbf{X}) = \beta_0 + \beta_1 \mathbf{x_1} + ... + \beta_m \mathbf{x}_m = \mathbf{X} \boldsymbol{\beta}$
+- A distribuição da resposta (condicionada nas observações) é normal e homocedástica: $\mathbf{Y} | \mathbf{X} \sim N_n(\mathbf{X} \boldsymbol{\beta}, \sigma^2 \mathbf{I}_n)$
 - $\boldsymbol{\beta}$ é estimado por Máximo Verossimilhança através de Quadrados Mínimos
-
-As suposições feitas nos dois primeiros ítens e a notação acima serão mantidas ao longo desta apresentação.
 
 ---
 
@@ -66,34 +62,34 @@ As suposições feitas nos dois primeiros ítens e a notação acima serão mant
 O Modelo Linear Generalizado (MLG ou GLM em inglês), introduzido por Nelder & Wedderburn (1972), consiste de três componentes:
 
 \begin{enumerate}
-  \item A variável resposta tem função de densidade (probabilidade) da família exponencial de parâmetros de localização natural e escala ($\theta$ e $\psi$, respecivamente):
+  \item A variável resposta tem função de densidade (probabilidade) da família exponencial com parâmetros de localização natural e escala ($\theta$ e $\psi$, respecivamente):
   \[
   f(y | \theta, \psi) = \exp \left( \frac{y\theta - b(\theta)}{a(\psi)} + c(y, \psi) \right)
   \]
   \item Um preditor linear $\boldsymbol{\eta} = \eta(\mathbf{X}) = \beta_0 + \sum_{j=1}^{m} \beta_j \mathbf{x}_j = \mathbf{X} \boldsymbol{\beta}$
-  \item Uma função de ligação $g$ tal que $E(Y) = \mu = g^{-1}(\eta)$. Como na família exponencial $\mu = b'(\theta)$, $g^{-1} = b'$ é chamada \textit{ligação canônica}.
+  \item Uma função de ligação $g$ tal que $E(\mathbf{Y} | \mathbf{X}) = \boldsymbol{\mu} = g^{-1}(\boldsymbol{\eta})$. Como na família exponencial $\boldsymbol{\mu} = \frac{\partial} {\partial\boldsymbol{\theta}} b(\boldsymbol{\theta})$, $g^{-1} = \frac{\partial} {\partial\boldsymbol{\theta}} b$ é chamada \textit{ligação canônica}.
 \end{enumerate}
 
-- $\boldsymbol{\beta}$ pode ser estimado por Máximo Verossimilhança através de métodos iterativos (Iterative Weighted Least Squares, também chamado Adjusted Dependent Variable Regression, ambos em inglês).
-<!-- - $Var(\mathbf{Y} | \mathbf{X}) = a(\phi)b''(\theta) = a(\phi)v(\mu)$. Isso significa que é possível realizar ajustes num cenário heterocedástico. -->
+- $\boldsymbol{\beta}$ pode ser estimado por Máximo Verossimilhança através de métodos iterativos (Iterative Weighted Least Squares ou Fisher Scoring, ambos em inglês).
+<!-- - $Var(Y | \mathbf{X}) = a(\phi)b''(\theta) = a(\phi)v(\mu)$. Isso significa que é possível realizar ajustes num cenário heterocedástico. -->
 
 ---
 
 ## MAG
 
-- O Modelo Aditivo Generalizado (MAG ou GAM em inglês), introduzido por Hastie & Tibshirani (1990), é um modelo geral, que permite a modelagem de uma transformação da média da resposta condicionada nas observações de forma paramétrica, não paramétrica ou uma mistura de ambos. Ele consiste de três componentes:
+O Modelo Aditivo Generalizado (MAG ou GAM em inglês), introduzido por Hastie & Tibshirani (1990), é um modelo mais geral e flexível, que permite a modelagem de uma transformação da média da resposta (condicionada nas observações) de forma paramétrica, não paramétrica ou uma mistura de ambos. Ele consiste de três componentes:
 
-  1. A variável resposta tem função de densidade (probabilidade) da família exponencial
-  2. Um preditor linear $\boldsymbol{\eta} = \eta(\mathbf{X}) = s_0 + \sum_{j=1}^{m} s_j(\mathbf{x}_j)$
-  3. Uma função de ligação $g$ tal que $E(Y) = \mu = g^{-1}(\eta)$.
+1. A variável resposta tem função de densidade (probabilidade) da família exponencial
+2. Um preditor aditivo $\boldsymbol{\eta} = \eta(\mathbf{X}) = s_0 + \sum_{j=1}^{m} s_j(\mathbf{x}_j)$
+3. Uma função de ligação $g$ tal que $E(\mathbf{Y} | \mathbf{X}) = \boldsymbol{\mu} = g^{-1}(\boldsymbol{\eta})$
 
-- $s_j$ são estimados através do algoritmo *Backfitting* (Retroajuste), que minimiza $E[(\mathbf{Y} - s_0 - \sum_{j=1}^{m} s_j(\mathbf{x}_j))^2]$ e supõe que $\boldsymbol{\eta} = s_0 + \sum_{j=1}^{m} s_j(\mathbf{x}_j) + \boldsymbol{\epsilon}$, com $\boldsymbol{\epsilon} \sim N(\mathbf{0}_{1 \times n}, \sigma^2 \mathbf{I}_n)$
+- $\boldsymbol{\eta}$ é estimado através do algoritmo *Backfitting* (Retroajuste), que minimiza $E[(\mathbf{Y} - s_0 - \sum_{j=1}^{m} s_j(\mathbf{x}_j))^2]$ e supõe que $\boldsymbol{\eta} = s_0 + \sum_{j=1}^{m} s_j(\mathbf{x}_j) + \boldsymbol{\epsilon}$, com $\boldsymbol{\epsilon} \sim N_n(\mathbf{0}_{1 \times n}, \sigma^2 \mathbf{I}_n)$
 
 
 # GAMLSS
 
 - Modelos Aditivos para Localização, Escala e Forma (GAMLSS em inglês) foi introduzido por Rigby & Stasinopoulos (2001, 2005) e Akantziliotou \textit{et al.} (2002)
-- Mais gerais que MAG (e MLG):
+- Mais gerais que MAG:
   - A família de funções de densidade (probabilidade) da resposta condicionada nas observações é mais geral que a família exponencial
   - É possível modelar todos os parâmetros da distribuição de $\mathbf{Y}$ de forma paramétrica, não paramétrica (suavizadores) ou por efeitos aleatórios
 
@@ -109,32 +105,48 @@ Sejam $g_k, k = 1, ..., p$ funções de ligação conhecidas que relacionam os p
 g_{k}\left(\boldsymbol{\theta}_{k}\right)=\boldsymbol{\eta}_{k}=\mathbf{X}_{k} \boldsymbol{\beta}_{k}+\sum_{j=1}^{J_{k}} \mathbf{Z}_{j k} \boldsymbol{\gamma}_{j k}
 \]
 
-- $\boldsymbol{\theta}_k = (\theta^1, ..., \theta^n)'$ e $\boldsymbol{\eta}$ (preditores) são vetores de tamanho $n$
-- $\boldsymbol{\beta}_k$ é um vetor de parâmetros de tamanho $J_k$
-- $\mathbf{X}_k$ são matrizes $n \times J_k$ de planejamento (conhecidas)
+- $\boldsymbol{\theta}_k = (\theta^1, ..., \theta^n)'$ e $\boldsymbol{\eta}_k$ (preditores) são vetores de tamanho $n$
+- $\mathbf{X}_k$ são matrizes $n \times J_k^\prime$ de planejamento fixas e $\boldsymbol{\beta}_k$ são vetores de parâmetros de tamanho $J_k^\prime$
 - $\mathbf{Z}_{j k}$ são matrizes $n \times q_{j k}$ de planejamento fixas e $\boldsymbol{\gamma}_{j k}$ é uma v.a. de dimensão $q_{j k}$
+- Observação: $J_k^\prime, J_k$ e $q_{j k}$ são determinados em função da quantidade e definição das matrizes de planejamento
 
 ---
 
 - Geralmente são considerados no máximo quatro parâmetros: $\boldsymbol{\theta} = (\boldsymbol{\mu}, \boldsymbol{\sigma}, \boldsymbol{\tau}, \boldsymbol{\nu})$ sendo o primeiro de localização, o segundo de escala e os restantes de forma (assimetria e curtose, por exemplo).
-- O modelo pode ser reduzido para $g_{k}\left(\boldsymbol{\theta}_{k}\right) = \boldsymbol{\eta}_{k} = \mathbf{X}_{k} \boldsymbol{\beta}_{k}$, equivalente ao MLG (para cada $\boldsymbol{\theta}_k$)
-- Se $\mathbf{Z}_{j k} = \mathbf{I}_n$ e $\boldsymbol{\gamma}_{j k} =  \mathbf{h}_{j k} = h_{j k}\left(\mathbf{x}_{j k}\right)$, o modelo se reduz a $g_{k}\left(\boldsymbol{\theta}_{k}\right) = \boldsymbol{\eta}_{k} = \mathbf{X}_{k} \boldsymbol{\beta}_{k} + \sum_{j=1}^{J_{k}} h_{j k}\left(\mathbf{x}_{j k}\right)$, chamado GAMLSS Semiparamétrico
+- O modelo pode ser reduzido para $g_{k}\left(\boldsymbol{\theta}_{k}\right) = \boldsymbol{\eta}_{k} = \mathbf{X}_{k} \boldsymbol{\beta}_{k}$, similar ao MLG
+- Se $\mathbf{Z}_{j k} = \mathbf{I}_n$ e $\boldsymbol{\gamma}_{j k} =  \mathbf{h}_{j k} = h_{j k}\left(\mathbf{x}_{j k}\right)$, o modelo pode ser reduzido a $g_{k}\left(\boldsymbol{\theta}_{k}\right) = \boldsymbol{\eta}_{k} = \sum_{j=1}^{J_{k}} h_{j k}\left(\mathbf{x}_{j k}\right)$, similar ao MAG
 
 ---
 
 ## Estimação
 
-- Suponha que $\boldsymbol{\gamma}_{j k} \sim N_{q_{j k}}(\mathbf{0}, \mathbf{G}_{j k}^{-1})$, onde $\mathbf{G}_{j k}^{-1})$ é a inversa (generalizada) de uma matriz simétrica quadrada $\mathbf{G}_{j k} = \mathbf{G}_{j k}\left(\boldsymbol{\lambda}_{j k}\right)$ de ordem $q_{j k}$ e se $\mathbf{G}_{j k}$ for singular, então $\boldsymbol{\gamma}_{j k}$ tem distribuição imprópria proporcional a $\exp \left(-\frac{1}{2} \gamma_{j k}^{\mathrm{T}} \mathbf{G}_{j k} \gamma_{j k}\right)$. 
+- Suponha que $\boldsymbol{\gamma}_{j k} \sim N_{q_{j k}}(\mathbf{0}_{1 \times q_{j k}}, \mathbf{G}_{j k}^{-1})$, onde $\mathbf{G}_{j k}^{-1}$ é a inversa (generalizada) de uma matriz simétrica quadrada $\mathbf{G}_{j k} = \mathbf{G}_{j k}\left(\boldsymbol{\lambda}_{j k}\right)$ de ordem $q_{j k}$ e se $\mathbf{G}_{j k}$ for singular, então $\boldsymbol{\gamma}_{j k}$ tem distribuição imprópria proporcional a $\exp \left(-\frac{1}{2} \gamma_{j k}^{\mathrm{T}} \mathbf{G}_{j k} \gamma_{j k}\right)$. 
     - $\boldsymbol{\lambda}_{j k}$ são hiperparâmetros, fixos ou estimados (\textit{c.f.} Rigby & Stasinopoulos, 2005)
-- Então, $\boldsymbol{\beta}_{k}$ e $\boldsymbol{\gamma}_{j k}$ são estimados por maximização de uma verossimilhança ($l=\Sigma_{i=1}^{n} \log \left\{f\left(y_{i} | \theta^{i}\right)\right\}$) penalizada: $l_{p}=l-\frac{1}{2} \sum_{k=1}^{p} \sum_{j=1}^{J_{k}} \boldsymbol{\gamma}_{j k}^{\mathrm{T}} \mathbf{G}_{j k} \boldsymbol{\gamma}_{j k}$
+- Então, $\boldsymbol{\beta}_{k}$ e $\boldsymbol{\gamma}_{j k}$ são estimados por maximização de uma verossimilhança penalizada $l_{p}$:
+
+\[
+l_{p}  =\ell - \frac{1}{2} \sum_{k=1}^{p} \sum_{j=1}^{J_{k}} \boldsymbol{\gamma}_{j k}^{\mathrm{\top}} \mathbf{G}_{j k} \boldsymbol{\gamma}_{j k}
+\]
+
+Onde $\ell=\sum_{i=1}^{n} \log \left\{f\left(y^{i} | \boldsymbol{\theta}^{i}\right)\right\}$.
 
 ---
 
 ## Inferência
 
-- O devio global de um modelo GAMLSS (COM TERMOS PARAMÉTRICOS E COM OU SEM TERMOS ADITIVOS???) é $\mathrm{GD} = -2\ell(\hat{\boldsymbol{\theta}})$, onde $\hat{\boldsymbol{\theta}}$ é a estimativa de $\boldsymbol{\theta}$ e $\ell$ a log-verossimilhança de $\boldsymbol{\theta}$
+- O devio global de um modelo GAMLSS (COM TERMOS PARAMÉTRICOS E COM OU SEM TERMOS ADITIVOS???) é $\mathrm{GD} = -2\ell(\hat{\boldsymbol{\theta}})$, onde $\hat{\boldsymbol{\theta}}$ é a estimativa de $\boldsymbol{\theta}$
 - Os graus de liberdade do erro são $\mathrm{df}_{\mathrm{e}} = n - \sum_{k=1}^{p} \mathrm{df}_{\theta_{k}}$, onde $\mathrm{df}_{\theta_{k}}$ são os graus de liberdade nos modelos preditores de $\theta_k, k = 1, ..., p$
 - Sejam $\mathcal{M}_0$ e $\mathcal{M}_1$ modelos GAMLSS de desvios globais $\mathrm{GD}_0$ e $\mathrm{GD}_1$ e graus de liberdade do erro $\mathrm{df}_{\mathrm{e0}}$ e $\mathrm{df}_{\mathrm{e1}}$, em que $\mathcal{M}_0$ está encaixado em $\mathcal{M}_1$
-- Então $\Lambda = \mathrm{GD}_0 - \mathrm{GD}_1$ é a estatística do teste (de razão generalizado) que testa $H_0:$ o modelo $\mathcal{M}_0$ é mais verossímel \textit{vs} $H_1:$ o modelo $\mathcal{M}_1$ é mais verossímel
+
+---
+
+- $\Lambda = \mathrm{GD}_0 - \mathrm{GD}_1$ é a estatística do teste (de razão de verossimilhança generalizado) que testa $H_0:$ o modelo $\mathcal{M}_0$ é mais verossímel \textit{vs} $H_1:$ o modelo $\mathcal{M}_1$ é mais verossímel
 - Sob condições de regularidade, $\Lambda$ tem distribuição assintótica $\chi^{2}$ de graus de liberdade $\mathrm{df}_{\mathrm{e0}} - \mathrm{df}_{\mathrm{e1}}$
-- É possível testar a nulidade de $\beta_{j k}$ tomando $\mathcal{M}_1$ como o modelo ajustado e $\mathcal{M}_0$ como o mesmo modelo com $\beta_{j k} = 0$
+- É possível testar $H_0: \beta_{j k} = \beta_{j k}^\prime$ contra $H_1: \beta_{j k} \neq \beta_{j k}^\prime$ tomando $\mathcal{M}_1$ como o modelo ajustado e $\mathcal{M}_0$ como o mesmo modelo com $\beta_{j k} = \beta_{j k}^\prime$ (desse modo $\mathrm{df}_{\mathrm{e0}} - \mathrm{df}_{\mathrm{e1}} = 1$)
+- É possível calcular um intervalo de confiança de $1 - \alpha$ de confiança para $\beta_{j k}$ através de um \textit{profiling} em $\beta_{j k}$: o intervalo é consitituído de todos os $\beta_{j k}^\prime$ tais que o teste acima falha em rejeitar $H_0$, sendo $\alpha$ o nível de significância do teste
+
+---
+
+# Exemplo
+
+
