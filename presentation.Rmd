@@ -1,5 +1,5 @@
 ---
-title: "Introdução ao GAMLSS com uma aplicação"
+title: "Introdução ao GAMLSS"
 author: "Victor Dalla, Jordão Bragantini"
 output: 
   beamer_presentation:
@@ -44,14 +44,14 @@ options(
 ## Notação
 
 - Variável resposta: $\mathbf{Y} = (Y^1, ..., Y^n)'$, todas independentes entre si (condicionadas nos parâmetros de suas distribuições)
-- Variáveis explicativas (ou preditores): $\mathbf{x}_1, ..., \mathbf{x}_m$, $m \ge 1$, de mesmos tamanhos que $\mathbf{Y}$
-- $\mathbf{X}$ é a matriz de planejamento (fixa e com $n$ linhas), cujas colunas são transformações das variáveis explicativas
+<!-- - Variáveis explicativas (ou preditores): $\mathbf{x}_1, ..., \mathbf{x}_m$, $m \ge 1$, de mesmos tamanhos que $\mathbf{Y}$ -->
+- $\mathbf{X}$ é a matriz fixa $n \times J$ de planejamento, cujas colunas são transformações das variáveis explicativas, em que geralmente a primeira coluna é um vetor de 1s
 
 ---
 
 ## Modelo linear simples homocedástico FICA???
 
-- A média da resposta condicionada nas observações é uma função linear desta: $E(\mathbf{Y} | \mathbf{X}) = \beta_0 + \beta_1 \mathbf{x_1} + ... + \beta_m \mathbf{x}_m = \mathbf{X} \boldsymbol{\beta}$
+- A média da resposta condicionada nas observações é uma função linear desta: $E(\mathbf{Y} | \mathbf{X}) = \beta_0 + \beta_1 \mathbf{x_1} + ... + \beta_J \mathbf{x}_J = \mathbf{X} \boldsymbol{\beta}$
 - A distribuição da resposta (condicionada nas observações) é normal e homocedástica: $\mathbf{Y} | \mathbf{X} \sim N_n(\mathbf{X} \boldsymbol{\beta}, \sigma^2 \mathbf{I}_n)$
 - $\boldsymbol{\beta}$ é estimado por Máximo Verossimilhança através de Quadrados Mínimos
 
@@ -66,7 +66,7 @@ O Modelo Linear Generalizado (MLG ou GLM em inglês), introduzido por Nelder & W
   \[
   f(y | \theta, \psi) = \exp \left( \frac{y\theta - b(\theta)}{a(\psi)} + c(y, \psi) \right)
   \]
-  \item Um preditor linear $\boldsymbol{\eta} = \eta(\mathbf{X}) = \beta_0 + \sum_{j=1}^{m} \beta_j \mathbf{x}_j = \mathbf{X} \boldsymbol{\beta}$
+  \item Um preditor linear $\boldsymbol{\eta} = \eta(\mathbf{X}) = \beta_0 + \sum_{j=2}^{J} \beta_j \mathbf{x}_j = \mathbf{X} \boldsymbol{\beta}$, onde $\mathbf{x}_j$ são as colunas de $\mathbf{X}$
   \item Uma função de ligação $g$ tal que $E(\mathbf{Y} | \mathbf{X}) = \boldsymbol{\mu} = g^{-1}(\boldsymbol{\eta})$. Como na família exponencial $\boldsymbol{\mu} = \frac{\partial} {\partial\boldsymbol{\theta}} b(\boldsymbol{\theta})$, $g^{-1} = \frac{\partial} {\partial\boldsymbol{\theta}} b$ é chamada \textit{ligação canônica}.
 \end{enumerate}
 
@@ -80,10 +80,10 @@ O Modelo Linear Generalizado (MLG ou GLM em inglês), introduzido por Nelder & W
 O Modelo Aditivo Generalizado (MAG ou GAM em inglês), introduzido por Hastie & Tibshirani (1990), é um modelo mais geral e flexível, que permite a modelagem de uma transformação da média da resposta (condicionada nas observações) de forma paramétrica, não paramétrica ou uma mistura de ambos. Ele consiste de três componentes:
 
 1. A variável resposta tem função de densidade (probabilidade) da família exponencial
-2. Um preditor aditivo $\boldsymbol{\eta} = \eta(\mathbf{X}) = s_0 + \sum_{j=1}^{m} s_j(\mathbf{x}_j)$
+2. Um preditor aditivo $\boldsymbol{\eta} = \eta(\mathbf{X}) = s_0 + \sum_{j=2}^{J} s_j(\mathbf{x}_j)$, onde $\mathbf{x}_j$ são as colunas de $\mathbf{X}$
 3. Uma função de ligação $g$ tal que $E(\mathbf{Y} | \mathbf{X}) = \boldsymbol{\mu} = g^{-1}(\boldsymbol{\eta})$
 
-- $\boldsymbol{\eta}$ é estimado através do algoritmo *Backfitting* (Retroajuste), que minimiza $E[(\mathbf{Y} - s_0 - \sum_{j=1}^{m} s_j(\mathbf{x}_j))^2]$ e supõe que $\boldsymbol{\eta} = s_0 + \sum_{j=1}^{m} s_j(\mathbf{x}_j) + \boldsymbol{\epsilon}$, com $\boldsymbol{\epsilon} \sim N_n(\mathbf{0}_{1 \times n}, \sigma^2 \mathbf{I}_n)$
+- $\boldsymbol{\eta}$ é estimado através do algoritmo *Backfitting* (Retroajuste), que supõe $\boldsymbol{\eta} = s_0 + \sum_{j=2}^{J} s_j(\mathbf{x}_j) + \boldsymbol{\epsilon}$, com $\boldsymbol{\epsilon} \sim N_n(\mathbf{0}_{1 \times n}, \sigma^2 \mathbf{I}_n)$
 
 
 # GAMLSS
@@ -108,7 +108,7 @@ g_{k}\left(\boldsymbol{\theta}_{k}\right)=\boldsymbol{\eta}_{k}=\mathbf{X}_{k} \
 - $\boldsymbol{\theta}_k = (\theta^1, ..., \theta^n)'$ e $\boldsymbol{\eta}_k$ (preditores) são vetores de tamanho $n$
 - $\mathbf{X}_k$ são matrizes $n \times J_k^\prime$ de planejamento fixas e $\boldsymbol{\beta}_k$ são vetores de parâmetros de tamanho $J_k^\prime$
 - $\mathbf{Z}_{j k}$ são matrizes $n \times q_{j k}$ de planejamento fixas e $\boldsymbol{\gamma}_{j k}$ é uma v.a. de dimensão $q_{j k}$
-- Observação: $J_k^\prime, J_k$ e $q_{j k}$ são determinados em função da quantidade e definição das matrizes de planejamento
+- Observação: $J_k^, J_k\prime$ e $q_{j k}$ são determinados pela quantidade e definição das matrizes de planejamento
 
 ---
 
@@ -120,7 +120,7 @@ g_{k}\left(\boldsymbol{\theta}_{k}\right)=\boldsymbol{\eta}_{k}=\mathbf{X}_{k} \
 
 ## Estimação
 
-- Suponha que $\boldsymbol{\gamma}_{j k} \sim N_{q_{j k}}(\mathbf{0}_{1 \times q_{j k}}, \mathbf{G}_{j k}^{-1})$, onde $\mathbf{G}_{j k}^{-1}$ é a inversa (generalizada) de uma matriz simétrica quadrada $\mathbf{G}_{j k} = \mathbf{G}_{j k}\left(\boldsymbol{\lambda}_{j k}\right)$ de ordem $q_{j k}$ e se $\mathbf{G}_{j k}$ for singular, então $\boldsymbol{\gamma}_{j k}$ tem distribuição imprópria proporcional a $\exp \left(-\frac{1}{2} \gamma_{j k}^{\mathrm{T}} \mathbf{G}_{j k} \gamma_{j k}\right)$. 
+- Suponha que $\boldsymbol{\gamma}_{j k} \sim N_{q_{j k}}(\mathbf{0}_{1 \times q_{j k}}, \mathbf{G}_{j k}^{-1})$, onde $\mathbf{G}_{j k}^{-1}$ é a inversa (generalizada) de uma matriz simétrica quadrada $\mathbf{G}_{j k} = \mathbf{G}_{j k}\left(\boldsymbol{\lambda}_{j k}\right)$ de ordem $q_{j k}$ e se $\mathbf{G}_{j k}$ for singular, então $\boldsymbol{\gamma}_{j k}$ tem distribuição imprópria proporcional a $\exp \left(-\frac{1}{2} \gamma_{j k}^{\mathrm{\top}} \mathbf{G}_{j k} \gamma_{j k}\right)$. 
     - $\boldsymbol{\lambda}_{j k}$ são hiperparâmetros, fixos ou estimados (\textit{c.f.} Rigby & Stasinopoulos, 2005)
 - Então, $\boldsymbol{\beta}_{k}$ e $\boldsymbol{\gamma}_{j k}$ são estimados por maximização de uma verossimilhança penalizada $l_{p}$:
 
