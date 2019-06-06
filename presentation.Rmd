@@ -26,7 +26,7 @@ header-includes:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
-  echo = TRUE, 
+  echo = FALSE, 
   message = FALSE,
   warning = FALSE,
   tidy.opts = list(width.cutoff = 60),
@@ -106,5 +106,86 @@ g_{k}\left(\boldsymbol{\theta}_{k}\right)=\boldsymbol{\eta}_{k}=\mathbf{X}_{k} \
 - É possível calcular um intervalo de confiança de $1 - \alpha$ de confiança para $\beta_{j k}$ através de um \textit{profiling} em $\beta_{j k}$: o intervalo é consitituído de todos os $\beta_{j k}^\prime$ tais que o teste acima falha em rejeitar $H_0$, sendo $\alpha$ o nível de significância do teste
 
 ---
+
+## Exemplo: Aluguel de imóveis em Munique
+
+- Pesquisa realizada em 1999 em Munique (Alemanha) onde foram amostrados 1969 novos contratos de alugueis dos quatro anos anteriores.
+- A variável resposta *rent* é o valor mensal do aluguel (em Marcos Alemães).
+- As variáveis explicativas são:
+    - *area*: Metros quadrados dos imóveis;
+    - *yearc*: Ano de construção;
+    - *cheating*: Contém aquecedor (sim ou não);
+    - *location*: Localização (abaixo da média, média ou acima da média).
+
+----
+
+## Exemplo: Aluguel de imóveis em Munique
+
+```{r libs}
+library(ggplot2)
+library(magrittr)
+library(dplyr)
+library(broom)
+library(gamlss)
+```
+
+
+```{r loading data}
+df <- gamlss.data::rent99
+df %<>% mutate(rentsqm = NULL,
+               bath = NULL,
+               kitchen = NULL,
+               district = NULL)
+```
+
+```{r plot y vs x}
+par(mfrow=c(2,2))
+plot(rent ~ ., data = df, col=rgb(0.7,0.7,0.7,0.5), pch=15, cex=0.5)
+```
+
+---
+
+## Exemplo: Aluguel de imóveis em Munique
+
+```{r plot hist y}
+hist(df$rent, col=rgb(0.7,0.7,0.7,0.5), pch=15, cex=0.5)
+```
+
+----
+
+## Exemplo: Aluguel de imóveis em Munique
+
+- Podemos observar que existe alguma relação com as variáveis explicativas e a variável respostas.
+- Problemas:
+    - Heterocedasticidade;
+    - Relação complexa (talvez não linear) entre as variáveis e suas interações;
+    - Assimetria positiva da variável resposta.
+
+---
+
+## Modelo Inicial
+
+$$
+Y_{i}=\beta_{0}+\beta_{1} x_{i 1}+\ldots+\beta_{r} x_{i r}+\epsilon_{i}
+$$
+
+$$
+\quad \epsilon_{i} \stackrel{\text { ind }}{\sim} \mathcal{N}\left(0, \sigma^{2}\right), \quad \text { for } i=1,2, \ldots, n
+$$
+---
+
+```{r lm}
+m1 <- gamlss(rent ~ area + yearc + location + cheating, family=NO, trace=F, data=df)
+```
+
+`r summary(m1) %>% tidy() %>% knitr::kable()`
+
+<!-- Important : GAMLSS uses normalized (randomized) quantile residuals. -->
+
+---
+
+```{r lm fit}
+plot(m1)
+```
 
 
