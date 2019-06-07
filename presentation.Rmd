@@ -29,6 +29,7 @@ knitr::opts_chunk$set(
   echo = FALSE, 
   message = FALSE,
   warning = FALSE,
+  results = FALSE,
   tidy.opts = list(width.cutoff = 60),
   tidy = TRUE
   )
@@ -127,6 +128,7 @@ library(magrittr)
 library(dplyr)
 library(broom)
 library(gamlss)
+library(knitr)
 ```
 
 
@@ -163,15 +165,19 @@ hist(df$rent, col=rgb(0.7,0.7,0.7,0.5), pch=15, cex=0.5)
 
 ---
 
-## Modelo Inicial
+## Modelo Linear Simples
 
 $$
 Y_{i}=\beta_{0}+\beta_{1} x_{i 1}+\ldots+\beta_{r} x_{i r}+\epsilon_{i}
 $$
 
 $$
-\quad \epsilon_{i} \stackrel{\text { ind }}{\sim} \mathcal{N}\left(0, \sigma^{2}\right), \quad \text { for } i=1,2, \ldots, n
+\text { onde } \quad \epsilon_{i} \stackrel{\text { ind }}{\sim} \mathcal{N}\left(0, \sigma^{2}\right), \quad \text { para } i=1,2, \ldots, n
 $$
+
+De forma matricial temos:
+$$\begin{aligned} \mathbf{Y} & \sim \mathcal{N}\left(\boldsymbol{\mu}, \boldsymbol{\sigma}^{2}\right) \\ \boldsymbol{\mu} &=\mathbf{X} \boldsymbol{\beta} \end{aligned}$$
+
 ---
 
 ```{r lm}
@@ -185,7 +191,81 @@ m1 <- gamlss(rent ~ area + yearc + location + cheating, family=NO, trace=F, data
 ---
 
 ```{r lm fit}
-plot(m1)
+# term.plot(m1)
+```
+---
+
+
+```{r}
+plot(m1, bg='white')
 ```
 
+---
 
+## Modelando localização e escala
+
+$$
+\begin{aligned} \mathbf{Y} & \stackrel{\mathrm{ind}}{\sim} \mathcal{D}(\boldsymbol{\mu}, \boldsymbol{\sigma}) \\ \boldsymbol{\eta}_{1} &=g_{1}(\boldsymbol{\mu})=\mathbf{X}_{1} \boldsymbol{\beta}_{1} \\ \boldsymbol{\eta}_{2} &=g_{2}(\boldsymbol{\sigma})=\mathbf{X}_{2} \boldsymbol{\beta}_{2} \end{aligned}
+$$
+
+Ou seja,
+$$
+\begin{aligned} \log (\mu) = \ & \beta_{10} + \beta_{11} \ \texttt {area} + \beta_{12} \ \texttt {yearc} + \beta_{13} \ \texttt {(if cheating = 1)} + \\ & \beta_{14} \ \texttt {(if location = 2)}  + \beta_{15} \ \texttt {(if location = 3)} \\ 
+\log (\sigma) = \ & \beta_{20} + \beta_{21} \ \texttt {area} + \beta_{22} \ \texttt {yearc} + \beta_{23} \ \texttt {(if cheating = 1)} + \\ & \beta_{24} \ \texttt {(if location = 2)}  + \beta_{25} \ \texttt {(if location = 3)} \end{aligned}
+$$
+--- 
+
+```{r}
+m2 <- gamlss(rent ~ area + yearc + location + cheating,
+             sigma.fo = ~ area + yearc + location + cheating,
+             family=GA, trace=F, data=df)
+```
+
+---
+
+```{r}
+# term.plot(m2)
+```
+
+---
+
+```{r}
+plot(m2, bg='white')
+```
+
+---
+
+## Modelando localização, escala e forma
+
+
+$$
+\begin{aligned} \mathbf{Y} & \stackrel{\mathrm{ind}}{\sim} \mathcal{D}(\boldsymbol{\mu}, \boldsymbol{\sigma}) \\ \boldsymbol{\eta}_{1} &=g_{1}(\boldsymbol{\mu})=\mathbf{X}_{1} \boldsymbol{\beta}_{1} \\ \boldsymbol{\eta}_{2} &=g_{2}(\boldsymbol{\sigma})=\mathbf{X}_{2} \boldsymbol{\beta}_{2} \\ \boldsymbol{\eta}_{3} &=g_{3}(\boldsymbol{\nu})=\mathbf{X}_{3} \boldsymbol{\beta}_{3} \end{aligned}
+$$
+
+Ou seja,
+$$
+\begin{aligned} \mu =  \ & \beta_{10} + \beta_{11} \ \texttt {area} + \beta_{12} \ \texttt {yearc} + \beta_{13} \ \texttt {(if cheating = 1)} + \\ & \beta_{14} \ \texttt {(if location = 2)}  + \beta_{15} \ \texttt {(if location = 3)} \\ 
+\log (\sigma) = \ & \beta_{20} + \beta_{21} \ \texttt {area} + \beta_{22} \ \texttt {yearc} + \beta_{23} \ \texttt {(if cheating = 1)} + \\ & \beta_{24} \ \texttt {(if location = 2)}  + \beta_{25} \ \texttt {(if location = 3)} \\ 
+\nu = & \ \beta_{30} + \beta_{31} \ \texttt {yearc} \end{aligned}
+$$
+
+---
+
+```{r}
+m3 <- gamlss(rent ~ area + yearc + location + cheating,
+             sigma.fo = ~ area + yearc + location + cheating,
+             nu.fo = ~ yearc,
+             family = BCCGo, trace = F, data = df)
+```
+
+---
+
+```{r}
+plot(m3, bg='white')
+```
+
+---
+organizar e ordenar
+`r AIC(m1, m2, m3) %>% kable()`
+`r BIC(m1, m2, m3) %>% kable()`
+---
