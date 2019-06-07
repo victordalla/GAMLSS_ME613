@@ -142,7 +142,7 @@ df %<>% mutate(rentsqm = NULL,
 
 ```{r plot y vs x}
 par(mfrow=c(2,2))
-plot(rent ~ ., data = df, col=rgb(0.7,0.7,0.7,0.5), pch=15, cex=0.5)
+plot(rent ~ ., data = df, col=rgb(0.7,0.7,0.7, 0.5), pch=15, cex=0.5)
 ```
 
 ---
@@ -190,9 +190,12 @@ m1 <- gamlss(rent ~ area + yearc + location + cheating, family=NO, trace=F, data
 
 ---
 
-```{r lm fit}
-# term.plot(m1)
+```{r}
+par(mfrow=c(2,2))
+term.plot(m1, data = df, se = T, partial.resid = T,
+          ask = F, col.res = rgb(0.7, 0.7, 0.7,0.3))
 ```
+
 ---
 
 
@@ -224,7 +227,9 @@ m2 <- gamlss(rent ~ area + yearc + location + cheating,
 ---
 
 ```{r}
-# term.plot(m2)
+par(mfrow=c(2,2))
+term.plot(m2, data = df, se = T, partial.resid = T,
+          ask = F, col.res = rgb(0.7, 0.7, 0.7,0.3))
 ```
 
 ---
@@ -235,11 +240,15 @@ plot(m2, bg='white')
 
 ---
 
+`r summary(m2) %>% tidy() %>% kable()`
+
+---
+
 ## Modelando localização, escala e forma
 
 
 $$
-\begin{aligned} \mathbf{Y} & \stackrel{\mathrm{ind}}{\sim} \mathcal{D}(\boldsymbol{\mu}, \boldsymbol{\sigma}) \\ \boldsymbol{\eta}_{1} &=g_{1}(\boldsymbol{\mu})=\mathbf{X}_{1} \boldsymbol{\beta}_{1} \\ \boldsymbol{\eta}_{2} &=g_{2}(\boldsymbol{\sigma})=\mathbf{X}_{2} \boldsymbol{\beta}_{2} \\ \boldsymbol{\eta}_{3} &=g_{3}(\boldsymbol{\nu})=\mathbf{X}_{3} \boldsymbol{\beta}_{3} \end{aligned}
+\begin{aligned} \mathbf{Y} & \stackrel{\mathrm{ind}}{\sim} \mathcal{D}(\boldsymbol{\mu}, \boldsymbol{\sigma}, \boldsymbol{\nu}) \\ \boldsymbol{\eta}_{1} &=g_{1}(\boldsymbol{\mu})=\mathbf{X}_{1} \boldsymbol{\beta}_{1} \\ \boldsymbol{\eta}_{2} &=g_{2}(\boldsymbol{\sigma})=\mathbf{X}_{2} \boldsymbol{\beta}_{2} \\ \boldsymbol{\eta}_{3} &=g_{3}(\boldsymbol{\nu})=\mathbf{X}_{3} \boldsymbol{\beta}_{3} \end{aligned}
 $$
 
 Ou seja,
@@ -261,8 +270,18 @@ m3 <- gamlss(rent ~ area + yearc + location + cheating,
 ---
 
 ```{r}
+par(mfrow=c(2,2))
+term.plot(m3, data = df, se = T, partial.resid = T,
+          ask = F, col.res = rgb(0.7, 0.7, 0.7,0.3))
+```
+
+---
+
+```{r}
 plot(m3, bg='white')
 ```
+
+`r summary(m3) %>% tidy() %>% kable() `
 
 ---
 organizar e ordenar
