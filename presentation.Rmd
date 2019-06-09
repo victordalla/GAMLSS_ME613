@@ -35,34 +35,74 @@ knitr::opts_chunk$set(
   )
 options(
   OutDec = ",", 
+  digits = 3, 
   knitr.table.format = "latex", 
   xtable.comment = FALSE
   )
 ```
 
-# Introdução
+```{r libs}
+library(gamlss)
+library(magrittr)
+library(ggplot2)
+library(broom)
+library(knitr)
+library(dplyr)
+```
 
-## Modelo linear simples homocedástico
 
-- Variável resposta: $\mathbf{Y} = (Y^1, ..., Y^n)'$, todas independentes entre si (condicionadas nos parâmetros de suas distribuições)
-- $\mathbf{X}$ é a matriz fixa $n \times J$ de planejamento, cujas colunas são transformações das variáveis explicativas, em que geralmente a primeira coluna é um vetor de 1
-- A média da resposta condicionada nas observações é uma função linear desta: $E(\mathbf{Y} | \mathbf{X}) = \beta_0 + \beta_1 \mathbf{x_1} + ... + \beta_J \mathbf{x}_J = \mathbf{X} \boldsymbol{\beta}$
-- A distribuição da resposta (condicionada nas observações) é normal e homocedástica: $\mathbf{Y} | \mathbf{X} \sim N_n(\mathbf{X} \boldsymbol{\beta}, \sigma^2 \mathbf{I}_n)$
+# Motivação: Aluguel de imóveis em Munique
+
+- Pesquisa realizada em 1999 em Munique (Alemanha) onde foram amostrados 1969 novos contratos de aluguéis dos quatro anos anteriores
+- A variável resposta *rent* é o valor mensal do aluguel (em Marcos Alemães)
+- As variáveis explicativas são:
+    - *area*: Área em metros quadrados dos imóveis
+    - *yearc*: Ano de construção
+    - *cheating*: Contém aquecedor? Sim (1) e não (0)
+    - *location*: Localização: abaixo da média (1), média (2) ou acima da média (3)
+
+----
+
+```{r loading data}
+df <- gamlss.data::rent99 %>% as_tibble() %>% 
+  dplyr::select(rent, area, yearc, location, cheating)
+```
+
+```{r plot y vs x}
+par(mfrow=c(2,2))
+plot(rent ~ ., data = df, col=rgb(0.7,0.7,0.7, 0.5), pch=15, cex=0.5)
+```
 
 ---
 
-# Motivação
+```{r plot hist y}
+hist(df$rent, col=rgb(0.7,0.7,0.7,0.5), pch=15, cex=0.5)
+```
 
-Exemplo motivador: 
+----
 
-- ajusta o modelo linear simples nos dados
-- indício de que o ajuste não foi bom: heterocedasticidade e não normalidade dos resíduos. 
+- Modelo Linear Simples
 
-Em seguida, mostra-se o GAMLSS com uma distribuição melhor e fora da família exponencial, com a possibilidade de modelar outros parâmetros
+$$
+Y_{i} = \beta_{0} + \beta_{1} x_{i 1} + \beta_{1} x_{i 1} + \beta_{1} x_{i 1} + \beta_{r} x_{i r} + \epsilon_{i}, \epsilon_{i} \stackrel{\text{ind}}{\sim} \mathcal{N}\left(0, \sigma^{2}\right)
+$$
 
-- mostrar se esse ajuste foi adequado e que foi melhor que o anterior
+- Problemas:
+    - Heterocedasticidade
+    - Relação complexa (talvez não linear) entre as variáveis e suas interações
+    - Assimetria positiva da variável resposta
 
 ---
+
+<!-- ## Modelo linear simples homocedástico -->
+
+<!-- - Variável resposta: $\mathbf{Y} = (Y^1, ..., Y^n)'$, todas independentes entre si (condicionadas nos parâmetros de suas distribuições) -->
+<!-- - $\mathbf{X}$ é a matriz fixa $n \times J$ de planejamento, cujas colunas são transformações das variáveis explicativas, em que geralmente a primeira coluna é um vetor de 1 -->
+<!-- - A média da resposta condicionada nas observações é uma função linear desta: $E(\mathbf{Y} | \mathbf{X}) = \beta_0 + \beta_1 \mathbf{x_1} + ... + \beta_J \mathbf{x}_J = \mathbf{X} \boldsymbol{\beta}$ -->
+<!-- - A distribuição da resposta (condicionada nas observações) é normal e homocedástica: $\mathbf{Y} | \mathbf{X} \sim N_n(\mathbf{X} \boldsymbol{\beta}, \sigma^2 \mathbf{I}_n)$ -->
+
+---
+
 
 # GAMLSS
 
@@ -91,92 +131,20 @@ g_{k}\left(\boldsymbol{\theta}_{k}\right)=\boldsymbol{\eta}_{k}=\mathbf{X}_{k} \
 - Geralmente são considerados no máximo quatro parâmetros: $\boldsymbol{\theta} = (\boldsymbol{\mu}, \boldsymbol{\sigma}, \boldsymbol{\nu}, \boldsymbol{\tau})$ sendo o primeiro de localização, o segundo de escala e os restantes de forma (assimetria e curtose, por exemplo).
 - O modelo pode ser reduzido para $g_{k}\left(\boldsymbol{\theta}_{k}\right) = \boldsymbol{\eta}_{k} = \mathbf{X}_{k} \boldsymbol{\beta}_{k}$
 
----
+<!-- --- -->
 
-## Inferência RESUMIR
+<!-- ## Inferência RESUMIR -->
 
-- O devio global de um modelo GAMLSS do tipo $g_{k}\left(\boldsymbol{\theta}_{k}\right) = \boldsymbol{\eta}_{k} = \mathbf{X}_{k} \boldsymbol{\beta}_{k}$ é $\mathrm{GD} = -2\ell(\hat{\boldsymbol{\theta}})$, onde $\hat{\boldsymbol{\theta}}$ é a estimativa de $\boldsymbol{\theta}$ e $\ell=\sum_{i=1}^{n} \log \left\{f\left(y^{i} | \boldsymbol{\theta}^{i}\right)\right\}$
-- Os graus de liberdade do erro são $\mathrm{df}_{\mathrm{e}} = n - \sum_{k=1}^{p} \mathrm{df}_{\theta_{k}}$, onde $\mathrm{df}_{\theta_{k}}$ são os graus de liberdade nos modelos preditores de $\theta_k, k = 1, ..., p$
-- Sejam $\mathcal{M}_0$ e $\mathcal{M}_1$ modelos GAMLSS de desvios globais $\mathrm{GD}_0$ e $\mathrm{GD}_1$ e graus de liberdade do erro $\mathrm{df}_{\mathrm{e0}}$ e $\mathrm{df}_{\mathrm{e1}}$, em que $\mathcal{M}_0$ está encaixado em $\mathcal{M}_1$
+<!-- - O devio global de um modelo GAMLSS do tipo $g_{k}\left(\boldsymbol{\theta}_{k}\right) = \boldsymbol{\eta}_{k} = \mathbf{X}_{k} \boldsymbol{\beta}_{k}$ é $\mathrm{GD} = -2\ell(\hat{\boldsymbol{\theta}})$, onde $\hat{\boldsymbol{\theta}}$ é a estimativa de $\boldsymbol{\theta}$ e $\ell=\sum_{i=1}^{n} \log \left\{f\left(y^{i} | \boldsymbol{\theta}^{i}\right)\right\}$ -->
+<!-- - Os graus de liberdade do erro são $\mathrm{df}_{\mathrm{e}} = n - \sum_{k=1}^{p} \mathrm{df}_{\theta_{k}}$, onde $\mathrm{df}_{\theta_{k}}$ são os graus de liberdade nos modelos preditores de $\theta_k, k = 1, ..., p$ -->
+<!-- - Sejam $\mathcal{M}_0$ e $\mathcal{M}_1$ modelos GAMLSS de desvios globais $\mathrm{GD}_0$ e $\mathrm{GD}_1$ e graus de liberdade do erro $\mathrm{df}_{\mathrm{e0}}$ e $\mathrm{df}_{\mathrm{e1}}$, em que $\mathcal{M}_0$ está encaixado em $\mathcal{M}_1$ -->
 
----
+<!-- --- -->
 
-- $\Lambda = \mathrm{GD}_0 - \mathrm{GD}_1$ é a estatística do teste (de razão de verossimilhança generalizado) que testa $H_0:$ o modelo $\mathcal{M}_0$ é mais verossímel \textit{vs} $H_1:$ o modelo $\mathcal{M}_1$ é mais verossímel
-- Sob condições de regularidade, $\Lambda$ tem distribuição assintótica $\chi^{2}$ de graus de liberdade $\mathrm{df}_{\mathrm{e0}} - \mathrm{df}_{\mathrm{e1}}$
-- É possível testar $H_0: \beta_{j k} = \beta_{j k}^\prime$ contra $H_1: \beta_{j k} \neq \beta_{j k}^\prime$ tomando $\mathcal{M}_1$ como o modelo ajustado e $\mathcal{M}_0$ como o mesmo modelo com $\beta_{j k} = \beta_{j k}^\prime$ (desse modo $\mathrm{df}_{\mathrm{e0}} - \mathrm{df}_{\mathrm{e1}} = 1$)
-- É possível calcular um intervalo de confiança de $1 - \alpha$ de confiança para $\beta_{j k}$ através de um \textit{profiling} em $\beta_{j k}$: o intervalo é consitituído de todos os $\beta_{j k}^\prime$ tais que o teste acima falha em rejeitar $H_0$, sendo $\alpha$ o nível de significância do teste
-
----
-
-## Exemplo: Aluguel de imóveis em Munique
-
-- Pesquisa realizada em 1999 em Munique (Alemanha) onde foram amostrados 1969 novos contratos de alugueis dos quatro anos anteriores.
-- A variável resposta *rent* é o valor mensal do aluguel (em Marcos Alemães).
-- As variáveis explicativas são:
-    - *area*: Metros quadrados dos imóveis;
-    - *yearc*: Ano de construção;
-    - *cheating*: Contém aquecedor (sim ou não);
-    - *location*: Localização (abaixo da média, média ou acima da média).
-
-----
-
-## Exemplo: Aluguel de imóveis em Munique
-
-```{r libs}
-library(ggplot2)
-library(magrittr)
-library(dplyr)
-library(broom)
-library(gamlss)
-library(knitr)
-```
-
-
-```{r loading data}
-df <- gamlss.data::rent99
-df %<>% mutate(rentsqm = NULL,
-               bath = NULL,
-               kitchen = NULL,
-               district = NULL)
-```
-
-```{r plot y vs x}
-par(mfrow=c(2,2))
-plot(rent ~ ., data = df, col=rgb(0.7,0.7,0.7, 0.5), pch=15, cex=0.5)
-```
-
----
-
-## Exemplo: Aluguel de imóveis em Munique
-
-```{r plot hist y}
-hist(df$rent, col=rgb(0.7,0.7,0.7,0.5), pch=15, cex=0.5)
-```
-
-----
-
-## Exemplo: Aluguel de imóveis em Munique
-
-- Podemos observar que existe alguma relação com as variáveis explicativas e a variável respostas.
-- Problemas:
-    - Heterocedasticidade;
-    - Relação complexa (talvez não linear) entre as variáveis e suas interações;
-    - Assimetria positiva da variável resposta.
-
----
-
-## Modelo Linear Simples
-
-$$
-Y_{i}=\beta_{0}+\beta_{1} x_{i 1}+\ldots+\beta_{r} x_{i r}+\epsilon_{i}
-$$
-
-$$
-\text { onde } \quad \epsilon_{i} \stackrel{\text { ind }}{\sim} \mathcal{N}\left(0, \sigma^{2}\right), \quad \text { para } i=1,2, \ldots, n
-$$
-
-De forma matricial temos:
-$$\begin{aligned} \mathbf{Y} & \sim \mathcal{N}\left(\boldsymbol{\mu}, \boldsymbol{\sigma}^{2}\right) \\ \boldsymbol{\mu} &=\mathbf{X} \boldsymbol{\beta} \end{aligned}$$
+<!-- - $\Lambda = \mathrm{GD}_0 - \mathrm{GD}_1$ é a estatística do teste (de razão de verossimilhança generalizado) que testa $H_0:$ o modelo $\mathcal{M}_0$ é mais verossímel \textit{vs} $H_1:$ o modelo $\mathcal{M}_1$ é mais verossímel -->
+<!-- - Sob condições de regularidade, $\Lambda$ tem distribuição assintótica $\chi^{2}$ de graus de liberdade $\mathrm{df}_{\mathrm{e0}} - \mathrm{df}_{\mathrm{e1}}$ -->
+<!-- - É possível testar $H_0: \beta_{j k} = \beta_{j k}^\prime$ contra $H_1: \beta_{j k} \neq \beta_{j k}^\prime$ tomando $\mathcal{M}_1$ como o modelo ajustado e $\mathcal{M}_0$ como o mesmo modelo com $\beta_{j k} = \beta_{j k}^\prime$ (desse modo $\mathrm{df}_{\mathrm{e0}} - \mathrm{df}_{\mathrm{e1}} = 1$) -->
+<!-- - É possível calcular um intervalo de confiança de $1 - \alpha$ de confiança para $\beta_{j k}$ através de um \textit{profiling} em $\beta_{j k}$: o intervalo é consitituído de todos os $\beta_{j k}^\prime$ tais que o teste acima falha em rejeitar $H_0$, sendo $\alpha$ o nível de significância do teste -->
 
 ---
 
@@ -211,22 +179,18 @@ $$
 \begin{aligned} \mathbf{Y} & \stackrel{\mathrm{ind}}{\sim} \mathcal{D}(\boldsymbol{\mu}, \boldsymbol{\sigma}) \\ \boldsymbol{\eta}_{1} &=g_{1}(\boldsymbol{\mu})=\mathbf{X}_{1} \boldsymbol{\beta}_{1} \\ \boldsymbol{\eta}_{2} &=g_{2}(\boldsymbol{\sigma})=\mathbf{X}_{2} \boldsymbol{\beta}_{2} \end{aligned}
 $$
 
-Ou seja,
 $$
 \begin{aligned} \log (\mu) = \ & \beta_{10} + \beta_{11} \ \texttt {area} + \beta_{12} \ \texttt {yearc} + \beta_{13} \ \texttt {(if cheating = 1)} + \\ & \beta_{14} \ \texttt {(if location = 2)}  + \beta_{15} \ \texttt {(if location = 3)} \\ 
 \log (\sigma) = \ & \beta_{20} + \beta_{21} \ \texttt {area} + \beta_{22} \ \texttt {yearc} + \beta_{23} \ \texttt {(if cheating = 1)} + \\ & \beta_{24} \ \texttt {(if location = 2)}  + \beta_{25} \ \texttt {(if location = 3)} \end{aligned}
 $$
+
 --- 
 
 ```{r}
 m2 <- gamlss(rent ~ area + yearc + location + cheating,
              sigma.fo = ~ area + yearc + location + cheating,
              family=GA, trace=F, data=df)
-```
 
----
-
-```{r}
 par(mfrow=c(2,2))
 term.plot(m2, data = df, se = T, partial.resid = T,
           ask = F, col.res = rgb(0.7, 0.7, 0.7,0.3))
@@ -251,7 +215,6 @@ $$
 \begin{aligned} \mathbf{Y} & \stackrel{\mathrm{ind}}{\sim} \mathcal{D}(\boldsymbol{\mu}, \boldsymbol{\sigma}, \boldsymbol{\nu}) \\ \boldsymbol{\eta}_{1} &=g_{1}(\boldsymbol{\mu})=\mathbf{X}_{1} \boldsymbol{\beta}_{1} \\ \boldsymbol{\eta}_{2} &=g_{2}(\boldsymbol{\sigma})=\mathbf{X}_{2} \boldsymbol{\beta}_{2} \\ \boldsymbol{\eta}_{3} &=g_{3}(\boldsymbol{\nu})=\mathbf{X}_{3} \boldsymbol{\beta}_{3} \end{aligned}
 $$
 
-Ou seja,
 $$
 \begin{aligned} \mu =  \ & \beta_{10} + \beta_{11} \ \texttt {area} + \beta_{12} \ \texttt {yearc} + \beta_{13} \ \texttt {(if cheating = 1)} + \\ & \beta_{14} \ \texttt {(if location = 2)}  + \beta_{15} \ \texttt {(if location = 3)} \\ 
 \log (\sigma) = \ & \beta_{20} + \beta_{21} \ \texttt {area} + \beta_{22} \ \texttt {yearc} + \beta_{23} \ \texttt {(if cheating = 1)} + \\ & \beta_{24} \ \texttt {(if location = 2)}  + \beta_{25} \ \texttt {(if location = 3)} \\ 
@@ -265,11 +228,7 @@ m3 <- gamlss(rent ~ area + yearc + location + cheating,
              sigma.fo = ~ area + yearc + location + cheating,
              nu.fo = ~ yearc,
              family = BCCGo, trace = F, data = df)
-```
 
----
-
-```{r}
 par(mfrow=c(2,2))
 term.plot(m3, data = df, se = T, partial.resid = T,
           ask = F, col.res = rgb(0.7, 0.7, 0.7,0.3))
@@ -281,10 +240,16 @@ term.plot(m3, data = df, se = T, partial.resid = T,
 plot(m3, bg='white')
 ```
 
+---
+
 `r summary(m3) %>% tidy() %>% kable() `
 
 ---
+
 organizar e ordenar
+
 `r AIC(m1, m2, m3) %>% kable()`
+
 `r BIC(m1, m2, m3) %>% kable()`
+
 ---
