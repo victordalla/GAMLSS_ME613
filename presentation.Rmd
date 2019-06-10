@@ -64,8 +64,8 @@ df <- gamlss.data::rent99 %>% as_tibble() %>%
 - As variáveis explicativas são:
     - *area* ($\mathbf{x}_{1}$): Área em metros quadrados dos imóveis
     - *yearc* ($\mathbf{x}_{2}$): Ano de construção.
-    - *cheating* ($\mathbf{x}_{3}$): Contém aquecedor? Sim (0) e não (1)
-    - *location* ($\mathbf{x}_{4}$): Localização: abaixo da média (1), média (2) ou acima da média (3)
+    - *cheating* ($j = 0, 1$): Contém aquecedor? Sim (0) e não (1)
+    - *location* ($k = 1, 2, 3$): Localização: abaixo da média (1), média (2) ou acima da média (3)
 
 ----
 
@@ -73,7 +73,7 @@ df <- gamlss.data::rent99 %>% as_tibble() %>%
 
 ```{r descriptive_analysis}
 par(mfrow=c(2,2))
-plot(rent ~ ., data = df, col=rgb(0.5,0.5,0.5, 0.5), pch=21, cex=0.8)
+plot(rent ~ ., data = df, col=gray(0.5, 0.5), pch=21, cex=0.8)
 ```
 
 ---
@@ -81,7 +81,7 @@ plot(rent ~ ., data = df, col=rgb(0.5,0.5,0.5, 0.5), pch=21, cex=0.8)
 ## Modelo Linear Simples (Modelo Normal)
 
 $$
-Y_{i} = \beta_{0} + \beta_{1} x_{i 1} + \beta_{2} x_{i 2} + \beta_{3} x_{i 3} + \beta_{4} x_{i 4} + \epsilon_{i}, \epsilon_{i} \stackrel{\text{ind}}{\sim} \mathcal{N}\left(0, \sigma^{2}\right)
+Y_{i j k} = \beta_{0} + \beta_{j} + \beta_{k} + \beta_{1} x_{i 1} + \beta_{2} x_{i 2} + \beta_{3} x_{i 3} + \epsilon_{i}, \epsilon_{i} \stackrel{\text{ind}}{\sim} \mathcal{N}\left(0, \sigma^{2}\right)
 $$
 
 - Problemas:
@@ -95,40 +95,22 @@ $$
 
 ```{r normal_model}
 normal_model <- gamlss(rent ~ area + yearc + location + cheating, family=NO, trace=F, data=df)
-# tidy(normal_model)
 ```
 
-\begin{table}[]
-\centering
-\caption{}
-\label{tab:normal_model}
-\begin{tabular}{lllll}
-\hline
-\multicolumn{1}{c}{Parâmero} & Termo       & Estimativa & Erro Padrão                & p-valor          \\ \hline
-mu                           & (Intercept) & -4009,45   & 249,89                     & \textless{}0.001 \\
-mu                           & area        & 5,19       & 0,11                       & \textless{}0.001 \\
-mu                           & yearc       & 2,04       & 0,13                       & \textless{}0.001 \\
-mu                           & location2   & 49,88      & 5,39                       & \textless{}0.001 \\
-mu                           & location3   & 131,62     & 16,55                      & \textless{}0.001 \\
-mu                           & cheating1   & 120,11     & 9,04                       & \textless{}0.001 \\
-sigma                        & (Intercept) & 4,96       & 0,01                       & \textless{}0.001 \\ \hline
-\end{tabular}
-\end{table}
+`r summary(normal_model) %>% tidy() %>% kable()`
 
 ---
 
-```{r}
-# par(mfrow=c(2,2))
-# term.plot(normal_model, data = df, se = T, partial.resid = T,
-#           ask = F, col.res = rgb(0.7, 0.7, 0.7,0.3))
-```
+`r confint(normal_model) %>% kable()`
+
+---
 
 ```{r}
 plot(
   normal_model, summaries = F, 
   parameters = par(
     mfrow=c(2,2), mar=par("mar")+c(0,1,0,0), 
-    col=rgb(0.5,0.5,0.5, 0.5), pch=21, cex=0.8
+    col=gray(0.5, 0.5), pch=21, cex=0.8
   ))
 ```
 
@@ -166,87 +148,43 @@ g_{k}\left(\boldsymbol{\theta}_{k}\right)=\boldsymbol{\eta}_{k}=\mathbf{X}_{k} \
 
 ## Diagnóstico
 
- - Resíduo quantílitico normalizado (resposta contínua): $\hat{r}_i = \Phi^{-1}(\hat{u}_i$, onde $\Phi^{-1}$ é a função quantil da normal padrão, $\hat{u}_i = F(y|\hat{\boldsymbol{\theta}})$ são os resíduos quantílicos e $F$ é a fda do modelo proposto para $Y$.
+ - Resíduo quantílitico (resposta contínua): $\hat{r}_i = \Phi^{-1}(\hat{u}_i$, onde $\Phi^{-1}$ é a função quantil da normal padrão, $\hat{u}_i = F(y|\hat{\boldsymbol{\theta}})$ são os resíduos quantílicos e $F$ é a fda do modelo proposto para $Y$.
 
  - Segundo Stasinopoulos \textit{et. al} (2017, pg 419), o resíduo quantílitico normalizado tem sempre distribuição normal padrão quando o modelo para $Y$ é correto.
 
 -  Portanto, as ferramentas de diagnóstico do modelo serão as mesmas do caso normal (gráfico de densidade e QQ-plot), permitindo uma comparação direta entre os modelos.
 
-
-<!-- ## Inferência RESUMIR -->
-
-<!-- - O devio global de um modelo GAMLSS do tipo $g_{k}\left(\boldsymbol{\theta}_{k}\right) = \boldsymbol{\eta}_{k} = \mathbf{X}_{k} \boldsymbol{\beta}_{k}$ é $\mathrm{GD} = -2\ell(\hat{\boldsymbol{\theta}})$, onde $\hat{\boldsymbol{\theta}}$ é a estimativa de $\boldsymbol{\theta}$ e $\ell=\sum_{i=1}^{n} \log \left\{f\left(y^{i} | \boldsymbol{\theta}^{i}\right)\right\}$ -->
-<!-- - Os graus de liberdade do erro são $\mathrm{df}_{\mathrm{e}} = n - \sum_{k=1}^{p} \mathrm{df}_{\theta_{k}}$, onde $\mathrm{df}_{\theta_{k}}$ são os graus de liberdade nos modelos preditores de $\theta_k, k = 1, ..., p$ -->
-<!-- - Sejam $\mathcal{M}_0$ e $\mathcal{M}_1$ modelos GAMLSS de desvios globais $\mathrm{GD}_0$ e $\mathrm{GD}_1$ e graus de liberdade do erro $\mathrm{df}_{\mathrm{e0}}$ e $\mathrm{df}_{\mathrm{e1}}$, em que $\mathcal{M}_0$ está encaixado em $\mathcal{M}_1$ -->
-
-<!-- --- -->
-
-<!-- - $\Lambda = \mathrm{GD}_0 - \mathrm{GD}_1$ é a estatística do teste (de razão de verossimilhança generalizado) que testa $H_0:$ o modelo $\mathcal{M}_0$ é mais verossímel \textit{vs} $H_1:$ o modelo $\mathcal{M}_1$ é mais verossímel -->
-<!-- - Sob condições de regularidade, $\Lambda$ tem distribuição assintótica $\chi^{2}$ de graus de liberdade $\mathrm{df}_{\mathrm{e0}} - \mathrm{df}_{\mathrm{e1}}$ -->
-<!-- - É possível testar $H_0: \beta_{j k} = \beta_{j k}^\prime$ contra $H_1: \beta_{j k} \neq \beta_{j k}^\prime$ tomando $\mathcal{M}_1$ como o modelo ajustado e $\mathcal{M}_0$ como o mesmo modelo com $\beta_{j k} = \beta_{j k}^\prime$ (desse modo $\mathrm{df}_{\mathrm{e0}} - \mathrm{df}_{\mathrm{e1}} = 1$) -->
-<!-- - É possível calcular um intervalo de confiança de $1 - \alpha$ de confiança para $\beta_{j k}$ através de um \textit{profiling} em $\beta_{j k}$: o intervalo é consitituído de todos os $\beta_{j k}^\prime$ tais que o teste acima falha em rejeitar $H_0$, sendo $\alpha$ o nível de significância do teste -->
-
 ---
 
-## Modelando localização e escala por GAMLSS (Modelo Gama)
+
+# Modelando por GAMLSS (Modelo Gama)
 
 $$
 \mathbf{Y} \stackrel{\mathrm{ind}}{\sim} \text{Gamma}(\boldsymbol{\mu}, \boldsymbol{\sigma}), \quad f(y ; \mu, \sigma^{2})=\frac{y^{1 / \sigma^{2}-1} \exp \left(-\frac{y}{\sigma^{2} \mu}\right)}{(\sigma^{2} \mu)^{(1 / \sigma^{2})} \Gamma(1 / \sigma^{2})}
 $$
+
 $$
 \begin{aligned} 
-  \log(\boldsymbol{\mu}) &= \boldsymbol{\eta}_{1} = \beta_{0} + \beta_{1} \mathbf{x}_{1} + \beta_{2} \mathbf{x}_{2} + \beta_{3} \mathbf{x}_{3} + \beta_{4} \mathbf{x}_{4} \\ 
-  \log(\boldsymbol{\sigma}) &= \boldsymbol{\eta}_{2} = \beta_{0} + \beta_{1} \mathbf{x}_{1} + \beta_{2} \mathbf{x}_{2} + \beta_{3} \mathbf{x}_{3} + \beta_{4} \mathbf{x}_{4}
+  \log(\boldsymbol{\mu}) &= \boldsymbol{\eta}_{1} = \beta_{0} + \beta_{j} + \beta_{k} + \beta_{1} \mathbf{x}_{1} + \beta_{2} \mathbf{x}_{2} \\ 
+  \log(\boldsymbol{\sigma}) &= \boldsymbol{\eta}_{2} = \beta_{0} + \beta_{j} + \beta_{k} + \beta_{1} \mathbf{x}_{1} + \beta_{2} \mathbf{x}_{2}
 \end{aligned}
 $$
 
 ---
 
-## GAMLSS: Resultados
+## Modelo Gama: Resultados
 
 ```{r gamma_model}
 gamma_model <- gamlss(rent ~ area + yearc + location + cheating,
              sigma.fo = ~ area + yearc + location + cheating,
              family=GA, trace=F, data=df)
-# tidy(gagamma_model)
 ```
 
-\begin{table}[]
-\centering
-\caption{}
-\label{tab:gamma_model}
-\begin{tabular}{lllll}
-\hline
-\multicolumn{1}{c}{Parâmero} & Termo       & Estimativa & Erro Padrão                          & p-valor          \\ \hline
-mu                           & (Intercept) & -5,164     & 0,527                                & \textless{}0,001 \\
-mu                           & area        & 0,011      & \textless{}0,001                     & \textless{}0,001 \\
-mu                           & yearc       & 0,005      & \textless{}0,001                     & \textless{}0,001 \\
-mu                           & location2   & 0,097      & 0,011                                & \textless{}0,001 \\
-mu                           & location3   & 0,203      & 0,041                                & \textless{}0,001 \\
-mu                           & cheating1   & 0,281      & 0,024                                & \textless{}0,001 \\
-sigma                        & (Intercept) & 10,116     & 1,220                                & \textless{}0,001 \\
-sigma                        & area        & 0,001      & 0,001                                & 0,007            \\
-sigma                        & yearc       & -0,006     & 0,001                                & \textless{}0,001 \\
-sigma                        & location2   & 0,081      & 0,026                                & 0,002            \\
-sigma                        & location3   & 0,244      & 0,080                                & 0,002            \\
-sigma                        & cheating1   & -0,200     & 0,044                                & \textless{}0,001 \\ \hline
-\end{tabular}
-\end{table}
+`r summary(gamma_model) %>% tidy() %>% kable() `
 
 ---
 
-```{r}
-# par(mfrow=c(2,2))
-# term.plot(gamma_model, data = df, se = T, partial.resid = T,
-#           ask = F, col.res = rgb(0.7, 0.7, 0.7,0.3))
-term.plot(gamma_model, what = "mu", se = TRUE, pages=1, ask=FALSE)
-```
-
----
-
-```{r}
-term.plot(gamma_model, what = "sigma", se = TRUE, pages=1, ask=FALSE)
-```
+`r confint(gamma_model) %>% kable()`
 
 ---
 
@@ -263,7 +201,7 @@ plot(
 
 ## Problemas
 
-- Distribuição dos resíduos (quantílicos normalizados) com assimetria negativa no gráfico da densidade estimada
+- Distribuição dos resíduos quantílicos com assimetria negativa no gráfico da densidade estimada
 - Comportamento sistemático das caudas no QQ-plot
 
 ## Sugestões
@@ -273,14 +211,66 @@ plot(
 
 ---
 
-## Comparação
+# Modelando por GAMLSS (Modelo X)
+
+$$
+\mathbf{Y} \stackrel{\mathrm{ind}}{\sim} X(\boldsymbol{\mu}, \boldsymbol{\sigma}, \boldsymbol{\nu})
+$$
+
+$$
+\begin{aligned} 
+  \log(\boldsymbol{\mu}) &= \boldsymbol{\eta}_{1} = \beta_{0} + \beta_{j} + \beta_{k} + \beta_{1} \mathbf{x}_{1} + \beta_{2} \mathbf{x}_{2} \\ 
+  \log(\boldsymbol{\sigma}) &= \boldsymbol{\eta}_{2} = \beta_{0} + \beta_{j} + \beta_{k} + \beta_{1} \mathbf{x}_{1} + \beta_{2} \mathbf{x}_{2} \\
+  \log(\boldsymbol{\nu}) &= \boldsymbol{\eta}_{2} = \beta_{0} + \beta_{j} + \beta_{k} + \beta_{1} \mathbf{x}_{1} + \beta_{2} \mathbf{x}_{2}
+\end{aligned}
+$$
+
+---
+
+## Modelo X: Resultados
 
 ```{r}
-compare_AIC <- AIC(normal_model, gamma_model)
-compare_BIC <- BIC(normal_model, gamma_model)
+boxcox_model <- gamlss(rent ~ area + yearc + location + cheating,
+             sigma.fo = ~ area + yearc + location + cheating,
+             nu.fo = ~ yearc,
+             family = BCCGo, trace = F, data = df)
+```
 
-R2_normal <- Rsq(normal_model)
-R2_gamma <- Rsq(gamma_model)
+`r summary(boxcox_model) %>% tidy() %>% kable() `
+
+---
+
+`r confint(boxcox_model) %>% kable()`
+
+---
+
+```{r}
+term.plot(
+  gamma_model, what = "mu", data = df, partial.resid = TRUE, 
+  col.res = gray(0.5, 0.5), pch.res=21, se = TRUE, pages = 1, ask = FALSE
+  )
+```
+
+---
+
+```{r}
+plot(
+  boxcox_model, summaries = F, 
+  parameters = par(
+    mfrow=c(2,2), mar=par("mar")+c(0,1,0,0), 
+    col=gray(0.5, 0.5), pch=21, cex=0.8
+  ))
+```
+
+---
+
+# Comparação
+
+```{r}
+compare_AIC <- AIC(normal_model, gamma_model, boxcox_model)
+compare_BIC <- BIC(normal_model, gamma_model, boxcox_model)
+
+R2 <- list(normal = Rsq(normal_model), gamma = Rsq(gamma_model), boxcox = Rsq(boxcox_model))
 ```
 
 \begin{table}[]
@@ -290,6 +280,7 @@ R2_gamma <- Rsq(gamma_model)
 \begin{tabular}{lllll}
 \hline
 Modelo & GL & AIC   & BIC   & $R^2$ \\ \hline
+X      & 14 & 38463 & 38547 & 0,52  \\
 Gama   & 12 & 38527 & 38599 & 0,51  \\
 Normal & 7  & 39328 & 39370 & 0,47  \\ \hline
 \end{tabular}
@@ -297,51 +288,4 @@ Normal & 7  & 39328 & 39370 & 0,47  \\ \hline
 
 ## Conclusão
 
-Apesar do ajuste do Modelo Gama não ter sido adequado, ele obteve uma performance melhor que o Modelo Normal nas métricas $R^2$, AIC e BIC
-
----
-
-## Modelando localização, escala e forma
-
-$$
-\begin{aligned} \mathbf{Y} & \stackrel{\mathrm{ind}}{\sim} \mathcal{D}(\boldsymbol{\mu}, \boldsymbol{\sigma}, \boldsymbol{\nu}) \\ \boldsymbol{\eta}_{1} &=g_{1}(\boldsymbol{\mu})=\mathbf{X}_{1} \boldsymbol{\beta}_{1} \\ \boldsymbol{\eta}_{2} &=g_{2}(\boldsymbol{\sigma})=\mathbf{X}_{2} \boldsymbol{\beta}_{2} \\ \boldsymbol{\eta}_{3} &=g_{3}(\boldsymbol{\nu})=\mathbf{X}_{3} \boldsymbol{\beta}_{3} \end{aligned}
-$$
-
-$$
-\begin{aligned} \mu =  \ & \beta_{10} + \beta_{11} \ \texttt {area} + \beta_{12} \ \texttt {yearc} + \beta_{13} \ \texttt {(if cheating = 1)} + \\ & \beta_{14} \ \texttt {(if location = 2)}  + \beta_{15} \ \texttt {(if location = 3)} \\ 
-\log (\sigma) = \ & \beta_{20} + \beta_{21} \ \texttt {area} + \beta_{22} \ \texttt {yearc} + \beta_{23} \ \texttt {(if cheating = 1)} + \\ & \beta_{24} \ \texttt {(if location = 2)}  + \beta_{25} \ \texttt {(if location = 3)} \\ 
-\nu = & \ \beta_{30} + \beta_{31} \ \texttt {yearc} \end{aligned}
-$$
-
----
-
-```{r}
-m3 <- gamlss(rent ~ area + yearc + location + cheating,
-             sigma.fo = ~ area + yearc + location + cheating,
-             nu.fo = ~ yearc,
-             family = BCCGo, trace = F, data = df)
-
-# par(mfrow=c(2,2))
-# term.plot(m3, data = df, se = T, partial.resid = T,
-#           ask = F, col.res = rgb(0.7, 0.7, 0.7,0.3))
-term.plot(gamma_model, se = TRUE, pages=1, ask=FALSE)
-```
-
----
-
-```{r}
-plot(m3, bg='white')
-```
-
----
-
-`r summary(m3) %>% tidy() %>% kable() `
-
----
-
-organizar e ordenar
-
-`r AIC(normal_model, gamma_model, m3) %>% kable()`
-
-`r BIC(normal_model, gamma_model, m3) %>% kable()`
 
