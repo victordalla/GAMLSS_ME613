@@ -97,7 +97,22 @@ $$
 normal_model <- gamlss(rent ~ area + yearc + location + cheating, family=NO, trace=F, data=df)
 ```
 
-`r summary(normal_model) %>% tidy() %>% kable()`
+\begin{table}[]
+\centering
+\caption{}
+\label{tab:normal_model}
+\begin{tabular}{llllll}
+\hline
+Parâmero & Termo       & Estimativa & EP      & IC(95\%) & p-valor          \\ \hline
+mu       & (Intercept) & -4009,45   & 249,890 &          & \textless{}0,001 \\
+mu       & area        & 5,19       & 0,112   &          & \textless{}0,001 \\
+mu       & yearc       & 2,04       & 0,128   &          & \textless{}0,001 \\
+mu       & location2   & 49,88      & 5,390   &          & \textless{}0,001 \\
+mu       & location3   & 131,62     & 16,555  &          & \textless{}0,001 \\
+mu       & cheating1   & 120,11     & 9,041   &          & \textless{}0,001 \\
+sigma    & (Intercept) & 4,96       & 0,013   &          & \textless{}0,001
+\end{tabular}
+\end{table}
 
 ---
 
@@ -180,7 +195,27 @@ gamma_model <- gamlss(rent ~ area + yearc + location + cheating,
              family=GA, trace=F, data=df)
 ```
 
-`r summary(gamma_model) %>% tidy() %>% kable() `
+\begin{table}[]
+\centering
+\caption{}
+\label{tab:gamma_model}
+\begin{tabular}{llllll}
+\hline
+\multicolumn{1}{c}{Parâmero} & Termo       & Estimativa & EP                        & IC(95\%) & p-valor          \\ \hline
+mu                           & (Intercept) & -5,164     & \multicolumn{1}{r}{0,527} &          & \textless{}0,001 \\
+mu                           & area        & 0,011      & \multicolumn{1}{r}{0,000} &          & \textless{}0,001 \\
+mu                           & yearc       & 0,005      & 0,000                     &          & \textless{}0,001 \\
+mu                           & location2   & 0,097      & 0,011                     &          & \textless{}0,001 \\
+mu                           & location3   & 0,203      & 0,041                     &          & \textless{}0,001 \\
+mu                           & cheating1   & 0,281      & 0,024                     &          & \textless{}0,001 \\
+sigma                        & (Intercept) & 10,116     & 1,220                     &          & \textless{}0,001 \\
+sigma                        & area        & 0,001      & 0,001                     &          & 0,007            \\
+sigma                        & yearc       & -0,006     & 0,001                     &          & \textless{}0,001 \\
+sigma                        & location2   & 0,081      & 0,026                     &          & 0,002            \\
+sigma                        & location3   & 0,244      & 0,080                     &          & 0,002            \\
+sigma                        & cheating1   & -0,200     & 0,044                     &          & \textless{}0,001 \\ \hline
+\end{tabular}
+\end{table}
 
 ---
 
@@ -221,7 +256,7 @@ $$
 \begin{aligned} 
   \log(\boldsymbol{\mu}) &= \boldsymbol{\eta}_{1} = \beta_{0} + \beta_{j} + \beta_{k} + \beta_{1} \mathbf{x}_{1} + \beta_{2} \mathbf{x}_{2} \\ 
   \log(\boldsymbol{\sigma}) &= \boldsymbol{\eta}_{2} = \beta_{0} + \beta_{j} + \beta_{k} + \beta_{1} \mathbf{x}_{1} + \beta_{2} \mathbf{x}_{2} \\
-  \log(\boldsymbol{\nu}) &= \boldsymbol{\eta}_{2} = \beta_{0} + \beta_{j} + \beta_{k} + \beta_{1} \mathbf{x}_{1} + \beta_{2} \mathbf{x}_{2}
+  \log(\boldsymbol{\nu}) &= \boldsymbol{\eta}_{2} = \beta_{0} + \beta_{2} \mathbf{x}_{2}
 \end{aligned}
 $$
 
@@ -236,7 +271,29 @@ boxcox_model <- gamlss(rent ~ area + yearc + location + cheating,
              family = BCCGo, trace = F, data = df)
 ```
 
-`r summary(boxcox_model) %>% tidy() %>% kable() `
+\begin{table}[]
+\centering
+\caption{}
+\label{tab:boxcox_model}
+\begin{tabular}{llllll}
+\hline
+Parâmero & Termo       & Estimativa & EP    & IC(95\%) & p-valor          \\ \hline
+mu       & (Intercept) & -7,017     & 0,505 &          & \textless{}0,001 \\
+mu       & area        & 0,011      & 0,000 &          & \textless{}0,001 \\
+mu       & yearc       & 0,006      & 0,000 &          & \textless{}0,001 \\
+mu       & location2   & 0,095      & 0,010 &          & \textless{}0,001 \\
+mu       & location3   & 0,202      & 0,036 &          & \textless{}0,001 \\
+mu       & cheating1   & 0,277      & 0,024 &          & \textless{}0,001 \\
+sigma    & (Intercept) & 12,440     & 1,240 &          & \textless{}0,001 \\
+sigma    & area        & 0,001      & 0,001 &          & 0,008            \\
+sigma    & yearc       & -0,007     & 0,001 &          & \textless{}0,001 \\
+sigma    & location2   & 0,079      & 0,027 &          & 0,003            \\
+sigma    & location3   & 0,202      & 0,082 &          & 0,014            \\
+sigma    & cheating1   & -0,207     & 0,045 &          & \textless{}0,001 \\
+nu       & (Intercept) & -17,799    & 3,770 &          & \textless{}0,001 \\
+nu       & yearc       & 0,009      & 0,002 &          & \textless{}0,001 \\ \hline
+\end{tabular}
+\end{table}
 
 ---
 
