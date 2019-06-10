@@ -69,6 +69,8 @@ df <- gamlss.data::rent99 %>% as_tibble() %>%
 
 ----
 
+## Ánalise descritiva
+
 ```{r descriptive_analysis}
 par(mfrow=c(2,2))
 plot(rent ~ ., data = df, col=rgb(0.5,0.5,0.5, 0.5), pch=21, cex=0.8)
@@ -76,7 +78,7 @@ plot(rent ~ ., data = df, col=rgb(0.5,0.5,0.5, 0.5), pch=21, cex=0.8)
 
 ---
 
-- Modelo Linear Simples
+## Modelo Linear Simples (Modelo Normal)
 
 $$
 Y_{i} = \beta_{0} + \beta_{1} x_{i 1} + \beta_{2} x_{i 2} + \beta_{3} x_{i 3} + \beta_{4} x_{i 4} + \epsilon_{i}, \epsilon_{i} \stackrel{\text{ind}}{\sim} \mathcal{N}\left(0, \sigma^{2}\right)
@@ -93,12 +95,13 @@ $$
 
 ```{r normal_model}
 normal_model <- gamlss(rent ~ area + yearc + location + cheating, family=NO, trace=F, data=df)
+# tidy(normal_model)
 ```
 
 \begin{table}[]
 \centering
 \caption{}
-\label{tab:model_comp}
+\label{tab:normal_model}
 \begin{tabular}{lllll}
 \hline
 \multicolumn{1}{c}{Parâmero} & Termo       & Estimativa & Erro Padrão                & p-valor          \\ \hline
@@ -185,13 +188,15 @@ g_{k}\left(\boldsymbol{\theta}_{k}\right)=\boldsymbol{\eta}_{k}=\mathbf{X}_{k} \
 
 ---
 
-## Modelando localização e escala por GAMLSS
+## Modelando localização e escala por GAMLSS (Modelo Gama)
 
 $$
+\mathbf{Y} \stackrel{\mathrm{ind}}{\sim} \text{Gamma}(\boldsymbol{\mu}, \boldsymbol{\sigma}), \quad f(y ; \mu, \sigma^{2})=\frac{y^{1 / \sigma^{2}-1} \exp \left(-\frac{y}{\sigma^{2} \mu}\right)}{(\sigma^{2} \mu)^{(1 / \sigma^{2})} \Gamma(1 / \sigma^{2})}
+$$
+$$
 \begin{aligned} 
-  \mathbf{Y} & \stackrel{\mathrm{ind}}{\sim} \text{Gamma}(\boldsymbol{\mu}, \boldsymbol{\sigma}), \quad f(y ; \mu, \sigma^{2})=\frac{y^{1 / \sigma^{2}-1} \exp \left(-\frac{y}{\sigma^{2} \mu}\right)}{(\sigma^{2} \mu)^{(1 / \sigma^{2})} \Gamma(1 / \sigma^{2})} \\ 
-  \log(\boldsymbol{\mu}) = \boldsymbol{\eta}_{1} & = \beta_{0} + \beta_{1} x_{i 1} + \beta_{2} x_{i 2} + \beta_{3} x_{i 3} + \beta_{4} x_{i 4} \\ 
-  \log(\boldsymbol{\sigma}) = \boldsymbol{\eta}_{2} & = \log(\boldsymbol{\sigma}) = \beta_{0} + \beta_{1} \mathbf{x}_{1} + \beta_{2} \mathbf{x}_{2} + \beta_{3} \mathbf{x}_{3} + \beta_{4} \mathbf{x}_{4}
+  \log(\boldsymbol{\mu}) &= \boldsymbol{\eta}_{1} = \beta_{0} + \beta_{1} \mathbf{x}_{1} + \beta_{2} \mathbf{x}_{2} + \beta_{3} \mathbf{x}_{3} + \beta_{4} \mathbf{x}_{4} \\ 
+  \log(\boldsymbol{\sigma}) &= \boldsymbol{\eta}_{2} = \beta_{0} + \beta_{1} \mathbf{x}_{1} + \beta_{2} \mathbf{x}_{2} + \beta_{3} \mathbf{x}_{3} + \beta_{4} \mathbf{x}_{4}
 \end{aligned}
 $$
 
@@ -199,16 +204,17 @@ $$
 
 ## GAMLSS: Resultados
 
-```{r}
+```{r gamma_model}
 gamma_model <- gamlss(rent ~ area + yearc + location + cheating,
              sigma.fo = ~ area + yearc + location + cheating,
              family=GA, trace=F, data=df)
+# tidy(gagamma_model)
 ```
 
 \begin{table}[]
 \centering
 \caption{}
-\label{tab:model_comp}
+\label{tab:gamma_model}
 \begin{tabular}{lllll}
 \hline
 \multicolumn{1}{c}{Parâmero} & Termo       & Estimativa & Erro Padrão                          & p-valor          \\ \hline
@@ -255,24 +261,43 @@ plot(
 
 ---
 
+## Problemas
+
+- Distribuição dos resíduos (quantílicos normalizados) com assimetria negativa no gráfico da densidade estimada
+- Comportamento sistemático das caudas no QQ-plot
+
+## Sugestões
+
+- Modelagem de $Y$ com uma distribuição mais apropriada
+- Uso de termos não paramétricos
+
+---
+
 ## Comparação
 
 ```{r}
 compare_AIC <- AIC(normal_model, gamma_model)
 compare_BIC <- BIC(normal_model, gamma_model)
+
+R2_normal <- Rsq(normal_model)
+R2_gamma <- Rsq(gamma_model)
 ```
 
 \begin{table}[]
 \centering
 \caption{}
 \label{tab:model_comp}
-\begin{tabular}{lllr}
+\begin{tabular}{lllll}
 \hline
-\multicolumn{1}{c}{Modelo} & AIC   & BIC   & \multicolumn{1}{l}{GL} \\ \hline
-Gama                       & 38527 & 39370 & 12                     \\
-Normal                     & 39328 & 38599 & 7                      \\ \hline
+Modelo & GL & AIC   & BIC   & $R^2$ \\ \hline
+Gama   & 12 & 38527 & 38599 & 0,51  \\
+Normal & 7  & 39328 & 39370 & 0,47  \\ \hline
 \end{tabular}
 \end{table}
+
+## Conclusão
+
+Apesar do ajuste do Modelo Gama não ter sido adequado, ele obteve uma performance melhor que o Modelo Normal nas métricas $R^2$, AIC e BIC
 
 ---
 
