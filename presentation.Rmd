@@ -242,9 +242,16 @@ plot(
 
 <!-- // TODO -->
 
-$$\mathbf{Y} \stackrel{\mathrm{ind}}{\sim} \text{BC}(\boldsymbol{\mu}, \boldsymbol{\sigma}, \boldsymbol{\nu}) \quad
+$$ 
+\mathbf{Y}^{\text { ind }} \mathrm{BC}(\boldsymbol{\mu}, \boldsymbol{\sigma}, \boldsymbol{\nu}) \quad f(y | \mu, \sigma, \nu)=\frac{1}{\sqrt{2 \pi \sigma}} \frac{y^{\nu-1}}{\mu^{\nu}} \exp \left(\frac{-z^{2}}{2}\right)
+$$
+Para $y>0, \mu>0, \sigma>0$ e $\nu \in (-\infty,+\infty)$, onde $z=\frac{\frac{y}{\mu^{\nu-1}}}{\nu \sigma}$ se $\nu \neq 0$ e $z=\log \left(\frac{y}{\mu}\right) / \sigma$ caso contrário.
 
-f(y|\mu,\sigma,\nu)=\frac{1}{\sqrt{2\pi\sigma}}\frac{y^{\nu-1}}{\mu^\nu}\exp\Big({\frac{-z^2}{2}}\Big) \ \text{onde} \\ \text{se} \ \nu \neq 0 \ \text{entao} \ z = \frac{\frac{y}{\mu^{\nu-1}}}{\nu\sigma} \\ \text{caso contrario} \ z = \log\Big(\frac{y}{\mu}\Big)/\sigma \ \text{para} \ y > 0, \mu >0, \sigma >0 \ \text{e} \ \nu =(-\infty,+\infty)$$
+<!-- $$ -->
+<!-- \mathbf{Y} \stackrel{\mathrm{ind}}{\sim} \text{BC}(\boldsymbol{\mu}, \boldsymbol{\sigma}, \boldsymbol{\nu}) \quad -->
+
+<!-- f(y|\mu,\sigma,\nu)=\frac{1}{\sqrt{2\pi\sigma}}\frac{y^{\nu-1}}{\mu^\nu}\exp\Big({\frac{-z^2}{2}}\Big) \ \text{onde} \\ \text{se} \ \nu \neq 0 \ \text{entao} \ z = \frac{\frac{y}{\mu^{\nu-1}}}{\nu\sigma} \\ \text{caso contrario} \ z = \log\Big(\frac{y}{\mu}\Big)/\sigma \ \text{para} \ y > 0, \mu >0, \sigma >0 \ \text{e} \ \nu =(-\infty,+\infty) -->
+<!-- $$ -->
 
 $$
 \begin{aligned}
