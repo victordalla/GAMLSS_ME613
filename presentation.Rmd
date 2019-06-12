@@ -81,7 +81,7 @@ plot(rent ~ ., data = df, col=gray(0.5, 0.5), pch=21, cex=0.8)
 ## Modelo Linear Simples (Modelo Normal)
 
 $$
-Y_{i} = \beta_{0} + \beta_{1} x_{i 1} + \beta_{2} x_{i 2} + \beta_{3} 1(x_{i 3} = 1) + \beta_{4} 1(x_{i 4} = 2) + \beta_{5} 1(x_{i 4} = 3) + \epsilon_{i}, \ \epsilon_{i} \stackrel{\text{ind}}{\sim} \mathcal{N}\left(0, \sigma^{2}\right)
+Y_{i} = \beta_{0} + \beta_{1} \mathbf x_1 + \beta_{2} \mathbf x_2 + \beta_{3} 1(\mathbf x_3 = 1) + \beta_{4} 1(\mathbf x_4 = 2) + \beta_{5} 1(\mathbf x_4 = 3) + \epsilon_{i}, \ \epsilon_{i} \stackrel{\text{ind}}{\sim} \mathcal{N}\left(0, \sigma^{2}\right)
 $$
 
 - Problemas:
@@ -101,22 +101,18 @@ normal_model <- gamlss(rent ~ area + yearc + location + cheating, family=NO, tra
 \centering
 \caption{}
 \label{tab:normal_model}
-\begin{tabular}{llllll}
+\begin{tabular}{llcccc}
 \hline
 Parâmero & Termo       & Estimativa & EP      & IC(95\%) & p-valor          \\ \hline
-mu       & (Intercept) & -4009,45   & 249,890 &          & \textless{}0,001 \\
-mu       & area        & 5,19       & 0,112   &          & \textless{}0,001 \\
-mu       & yearc       & 2,04       & 0,128   &          & \textless{}0,001 \\
-mu       & location2   & 49,88      & 5,390   &          & \textless{}0,001 \\
-mu       & location3   & 131,62     & 16,555  &          & \textless{}0,001 \\
-mu       & cheating1   & 120,11     & 9,041   &          & \textless{}0,001 \\
-sigma    & (Intercept) & 4,96       & 0,013   &          & \textless{}0,001
+$\mu$    & (Intercept) & -4009,45   & 249,890 & (-4481,00, -3537,91) & \textless{}0,001 \\
+$\mu$    & area        & 5,19       & 0,112   & (4,97, 5,41)         & \textless{}0,001 \\
+$\mu$    & yearc       & 2,04       & 0,128   & (1,80, 2,28)         & \textless{}0,001 \\
+$\mu$    & location2   & 49,88      & 5,390   & (39,32, 60,43)       & \textless{}0,001 \\
+$\mu$    & location3   & 131,62     & 16,555  & (99,17, 164,06)      & \textless{}0,001 \\
+$\mu$    & cheating1   & 120,11     & 9,041   & (102,47, 137,75)     & \textless{}0,001 \\
+$\sigma$ & (Intercept) & 4,96       & 0,013   & (-467, 477)          & \textless{}0,001 \\ \hline
 \end{tabular}
 \end{table}
-
----
-
-`r confint(normal_model) %>% kable()`
 
 ---
 
@@ -180,8 +176,8 @@ $$
 
 $$
 \begin{aligned} 
-  \log(\boldsymbol{\mu}) &= \boldsymbol{\eta}_{1} =  \beta_{10} + \beta_{11} x_{i 1} + \beta_{12} x_{i 2} + \beta_{13} 1(x_{i 3} = 1) + \beta_{14} 1(x_{i 4} = 2) + \beta_{15} 1(x_{i 4} = 3) \\
-  \log(\boldsymbol{\sigma}) &= \boldsymbol{\eta}_{2} =  \beta_{20} + \beta_{21} x_{i 1} + \beta_{22} x_{i 2} + \beta_{23} 1(x_{i 3} = 1) + \beta_{24} 1(x_{i 4} = 2) + \beta_{25} 1(x_{i 4} = 3) 
+  \log(\boldsymbol{\mu}) = \boldsymbol{\eta}_{1} =&  \beta_{10} + \beta_{11} \mathbf x_1 + \beta_{12} \mathbf x_2 + \beta_{13} 1(\mathbf x_3 = 1) + \\ & \beta_{14} 1(\mathbf x_4 = 2) + \beta_{15} 1(\mathbf x_4 = 3) \\
+  \log(\boldsymbol{\sigma}) = \boldsymbol{\eta}_{2} =&  \beta_{20} + \beta_{21} \mathbf x_1 + \beta_{22} \mathbf x_2 + \beta_{23} 1(\mathbf x_3 = 1) + \\ & \beta_{24} 1(\mathbf x_4 = 2) + \beta_{25} 1(\mathbf x_4 = 3) 
 \end{aligned}
 $$
 
@@ -199,27 +195,23 @@ gamma_model <- gamlss(rent ~ area + yearc + location + cheating,
 \centering
 \caption{}
 \label{tab:gamma_model}
-\begin{tabular}{llllll}
+\begin{tabular}{llcccc}
 \hline
-\multicolumn{1}{c}{Parâmero} & Termo       & Estimativa & EP                        & IC(95\%) & p-valor          \\ \hline
-mu                           & (Intercept) & -5,164     & \multicolumn{1}{r}{0,527} &          & \textless{}0,001 \\
-mu                           & area        & 0,011      & \multicolumn{1}{r}{0,000} &          & \textless{}0,001 \\
-mu                           & yearc       & 0,005      & 0,000                     &          & \textless{}0,001 \\
-mu                           & location2   & 0,097      & 0,011                     &          & \textless{}0,001 \\
-mu                           & location3   & 0,203      & 0,041                     &          & \textless{}0,001 \\
-mu                           & cheating1   & 0,281      & 0,024                     &          & \textless{}0,001 \\
-sigma                        & (Intercept) & 10,116     & 1,220                     &          & \textless{}0,001 \\
-sigma                        & area        & 0,001      & 0,001                     &          & 0,007            \\
-sigma                        & yearc       & -0,006     & 0,001                     &          & \textless{}0,001 \\
-sigma                        & location2   & 0,081      & 0,026                     &          & 0,002            \\
-sigma                        & location3   & 0,244      & 0,080                     &          & 0,002            \\
-sigma                        & cheating1   & -0,200     & 0,044                     &          & \textless{}0,001 \\ \hline
+\multicolumn{1}{c}{Parâmero} & Termo       & Estimativa & EP                        & IC(95\%)         & p-valor          \\ \hline
+$\mu$                        & (Intercept) & -5,164     & \multicolumn{1}{r}{0,527} & (-5,888, -4,440) & \textless{}0,001 \\
+$\mu$                        & area        & 0,011      & \multicolumn{1}{r}{0,000} & (0,011, 0,012)   & \textless{}0,001 \\
+$\mu$                        & yearc       & 0,005      & 0,000                     & (0,005, 0,006)   & \textless{}0,001 \\
+$\mu$                        & location2   & 0,097      & 0,011                     & (0,076, 0,119)   & \textless{}0,001 \\
+$\mu$                        & location3   & 0,203      & 0,041                     & (0,122, 0,283)   & \textless{}0,001 \\
+$\mu$                        & cheating1   & 0,281      & 0,024                     & (0,234, 0,327)   & \textless{}0,001 \\
+$\sigma$                     & (Intercept) & 10,116     & 1,220                     & (9,392, 10,840)  & \textless{}0,001 \\
+$\sigma$                     & area        & 0,001      & 0,001                     & (0,001, 0,002)   & 0,007            \\
+$\sigma$                     & yearc       & -0,006     & 0,001                     & (-0,006, -0,005) & \textless{}0,001 \\
+$\sigma$                     & location2   & 0,081      & 0,026                     & (0,060, 0,103)   & 0,002            \\
+$\sigma$                     & location3   & 0,244      & 0,080                     & (0,164,  0,325)  & 0,002            \\
+$\sigma$                     & cheating1   & -0,200     & 0,044                     & (-0,247, -0,154) & \textless{}0,001 \\ \hline
 \end{tabular}
 \end{table}
-
----
-
-`r confint(gamma_model) %>% kable()`
 
 ---
 
@@ -248,17 +240,17 @@ plot(
 
 # Modelando por GAMLSS (Modelo Box-Cox Normal)
 
-$$
-\mathbf{Y} \stackrel{\mathrm{ind}}{\sim} \text{BC}(\boldsymbol{\mu}, \boldsymbol{\sigma}, \boldsymbol{\nu}); \quad
+<!-- // TODO -->
 
+$$\mathbf{Y} \stackrel{\mathrm{ind}}{\sim} \text{BC}(\boldsymbol{\mu}, \boldsymbol{\sigma}, \boldsymbol{\nu}) \quad
 
-f(y|\mu,\sigma,\nu)=\frac{1}{\sqrt{2\pi\sigma}}\frac{y^{\nu-1}}{mu^\nu}\exp\Big({\frac{-z^2}{2}}\Big) \ \text{onde} \\ \text{se} \ \nu \neq 0 \ \text{então} \ z = \frac{\frac{y}{\mu^{\nu-1}}}{\nu\sigma} \\ \text{caso contrário} \ z = \log\Big(\frac{y}{\mu}\Big)/\sigma \ \text{para} \ y > 0, \mu >0, \sigma >0 \ \text{e} \ \nu =(-\infty,+\infty).
+f(y|\mu,\sigma,\nu)=\frac{1}{\sqrt{2\pi\sigma}}\frac{y^{\nu-1}}{\mu^\nu}\exp\Big({\frac{-z^2}{2}}\Big) \ \text{onde} \\ \text{se} \ \nu \neq 0 \ \text{entao} \ z = \frac{\frac{y}{\mu^{\nu-1}}}{\nu\sigma} \\ \text{caso contrario} \ z = \log\Big(\frac{y}{\mu}\Big)/\sigma \ \text{para} \ y > 0, \mu >0, \sigma >0 \ \text{e} \ \nu =(-\infty,+\infty)$$
+
 $$
-$$
-\begin{aligned} 
-  \log(\boldsymbol{\mu}) &= \boldsymbol{\eta}_{1} = \beta_{10} + \beta_{11} x_{i 1} + \beta_{12} x_{i 2} + \beta_{13} 1(x_{i 3} = 1) + \beta_{14} 1(x_{i 4} = 2) + \beta_{15} 1(x_{i 4} = 3)  \\ 
-  \log(\boldsymbol{\sigma}) &= \boldsymbol{\eta}_{2} = \beta_{20} + \beta_{21} x_{i 1} + \beta_{22} x_{i 2} + \beta_{23} 1(x_{i 3} = 1) + \beta_{24} 1(x_{i 4} = 2) + \beta_{25} 1(x_{i 4} = 3)  \\
-  \boldsymbol{\nu} &= \boldsymbol{\eta}_{2} = \beta_{30} + \beta_{31} \mathbf{x}_{2}
+\begin{aligned}
+  \log(\boldsymbol{\mu}) = \boldsymbol{\eta}_{1} =& \beta_{10} + \beta_{11} \mathbf x_1 + \beta_{12} \mathbf x_2 + \beta_{13} 1(\mathbf x_3 = 1) + \\ & \beta_{14} 1(\mathbf x_4 = 2) + \beta_{15} 1(\mathbf x_4 = 3)  \\
+  \log(\boldsymbol{\sigma}) = \boldsymbol{\eta}_{2} =& \beta_{20} + \beta_{21} \mathbf x_1 + \beta_{22} \mathbf x_2 + \beta_{23} 1(\mathbf x_3 = 1) + \\ & \beta_{24} 1(\mathbf x_4 = 2) + \beta_{25} 1(\mathbf x_4 = 3)  \\
+  \boldsymbol{\nu} = \boldsymbol{\eta}_{2} =& \beta_{30} + \beta_{31} \mathbf{x}_{2}
 \end{aligned}
 $$
 
@@ -272,34 +264,31 @@ boxcox_model <- gamlss(rent ~ area + yearc + location + cheating,
              nu.fo = ~ yearc,
              family = BCCGo, trace = F, data = df)
 ```
-
 \begin{table}[]
 \centering
 \caption{}
 \label{tab:boxcox_model}
-\begin{tabular}{llllll}
+\scalebox{0.9} {
+\begin{tabular}{llcccc}
 \hline
-Parâmero & Termo       & Estimativa & EP    & IC(95\%) & p-valor          \\ \hline
-mu       & (Intercept) & -7,017     & 0,505 &          & \textless{}0,001 \\
-mu       & area        & 0,011      & 0,000 &          & \textless{}0,001 \\
-mu       & yearc       & 0,006      & 0,000 &          & \textless{}0,001 \\
-mu       & location2   & 0,095      & 0,010 &          & \textless{}0,001 \\
-mu       & location3   & 0,202      & 0,036 &          & \textless{}0,001 \\
-mu       & cheating1   & 0,277      & 0,024 &          & \textless{}0,001 \\
-sigma    & (Intercept) & 12,440     & 1,240 &          & \textless{}0,001 \\
-sigma    & area        & 0,001      & 0,001 &          & 0,008            \\
-sigma    & yearc       & -0,007     & 0,001 &          & \textless{}0,001 \\
-sigma    & location2   & 0,079      & 0,027 &          & 0,003            \\
-sigma    & location3   & 0,202      & 0,082 &          & 0,014            \\
-sigma    & cheating1   & -0,207     & 0,045 &          & \textless{}0,001 \\
-nu       & (Intercept) & -17,799    & 3,770 &          & \textless{}0,001 \\
-nu       & yearc       & 0,009      & 0,002 &          & \textless{}0,001 \\ \hline
+Parâmero & Termo       & Estimativa & EP    & IC(95\%)         & p-valor          \\ \hline
+$\mu$    & (Intercept) & -7,017     & 0,505 & (-7,524, -6,511) & \textless{}0,001 \\
+$\mu$    & area        & 0,011      & 0,000 & (0,011, 0,012)   & \textless{}0,001 \\
+$\mu$    & yearc       & 0,006      & 0,000 & (0,006, 0,006)   & \textless{}0,001 \\
+$\mu$    & location2   & 0,095      & 0,010 & (0,074, 0,116)   & \textless{}0,001 \\
+$\mu$    & location3   & 0,202      & 0,036 & (0,127, 0,278)   & \textless{}0,001 \\
+$\mu$    & cheating1   & 0,277      & 0,024 & (0,230, 0,323)   & \textless{}0,001 \\
+$\sigma$ & (Intercept) & 12,440     & 1,240 & (11,933, 12,947) & \textless{}0,001 \\
+$\sigma$ & area        & 0,001      & 0,001 & (0,001, 0,002)   & 0,008            \\
+$\sigma$ & yearc       & -0,007     & 0,001 & (-0,007, -0,007) & \textless{}0,001 \\
+$\sigma$ & location2   & 0,079      & 0,027 & (0,058, 0,100)   & 0,003            \\
+$\sigma$ & location3   & 0,202      & 0,082 & (0,127, 0,278)   & 0,014            \\
+$\sigma$ & cheating1   & -0,207     & 0,045 & (-0,254, -0,160) & \textless{}0,001 \\
+$\nu$    & (Intercept) & -17,799    & 3,770 & (-18,306, -17,29)& \textless{}0,001 \\
+$\nu$    & yearc       & 0,009      & 0,002 & (0,009, 0,01)    & \textless{}0,001 \\ \hline
 \end{tabular}
+}
 \end{table}
-
----
-
-`r confint(boxcox_model) %>% kable()`
 
 ---
 
@@ -338,10 +327,10 @@ R2 <- list(normal = Rsq(normal_model), gamma = Rsq(gamma_model), boxcox = Rsq(bo
 \label{tab:model_comp}
 \begin{tabular}{lllll}
 \hline
-Modelo & GL & AIC   & BIC   & $R^2$ \\ \hline
-X      & 14 & 38463 & 38547 & 0,52  \\
-Gama   & 12 & 38527 & 38599 & 0,51  \\
-Normal & 7  & 39328 & 39370 & 0,47  \\ \hline
+Modelo  & GL & AIC   & BIC   & $R^2$ \\ \hline
+Box-Cox & 14 & 38463 & 38547 & 0,52  \\
+Gama    & 12 & 38527 & 38599 & 0,51  \\
+Normal  & 7  & 39328 & 39370 & 0,47  \\ \hline
 \end{tabular}
 \end{table}
 
