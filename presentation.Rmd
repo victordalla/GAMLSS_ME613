@@ -240,18 +240,11 @@ plot(
 
 # Modelando por GAMLSS (Modelo Box-Cox Normal)
 
-<!-- // TODO -->
-
 $$ 
 \mathbf{Y}^{\text { ind }} \mathrm{BC}(\boldsymbol{\mu}, \boldsymbol{\sigma}, \boldsymbol{\nu}) \quad f(y | \mu, \sigma, \nu)=\frac{1}{\sqrt{2 \pi \sigma}} \frac{y^{\nu-1}}{\mu^{\nu}} \exp \left(\frac{-z^{2}}{2}\right)
 $$
+
 Para $y>0, \mu>0, \sigma>0$ e $\nu \in (-\infty,+\infty)$, onde $z=\frac{\frac{y}{\mu^{\nu-1}}}{\nu \sigma}$ se $\nu \neq 0$ e $z=\log \left(\frac{y}{\mu}\right) / \sigma$ caso contrário.
-
-<!-- $$ -->
-<!-- \mathbf{Y} \stackrel{\mathrm{ind}}{\sim} \text{BC}(\boldsymbol{\mu}, \boldsymbol{\sigma}, \boldsymbol{\nu}) \quad -->
-
-<!-- f(y|\mu,\sigma,\nu)=\frac{1}{\sqrt{2\pi\sigma}}\frac{y^{\nu-1}}{\mu^\nu}\exp\Big({\frac{-z^2}{2}}\Big) \ \text{onde} \\ \text{se} \ \nu \neq 0 \ \text{entao} \ z = \frac{\frac{y}{\mu^{\nu-1}}}{\nu\sigma} \\ \text{caso contrario} \ z = \log\Big(\frac{y}{\mu}\Big)/\sigma \ \text{para} \ y > 0, \mu >0, \sigma >0 \ \text{e} \ \nu =(-\infty,+\infty) -->
-<!-- $$ -->
 
 $$
 \begin{aligned}
@@ -260,6 +253,8 @@ $$
   \boldsymbol{\nu} = \boldsymbol{\eta}_{2} =& \beta_{30} + \beta_{31} \mathbf{x}_{2}
 \end{aligned}
 $$
+
+<!-- Note que as outras covariáveis foram eliminadas na modelagem do parâmetro $\nu$ uma vez que elas não apresentaram valores significantes. -->
 
 ---
 
@@ -271,6 +266,7 @@ boxcox_model <- gamlss(rent ~ area + yearc + location + cheating,
              nu.fo = ~ yearc,
              family = BCCGo, trace = F, data = df)
 ```
+
 \begin{table}[]
 \centering
 \caption{}
@@ -342,5 +338,8 @@ Normal  & 7  & 39328 & 39370 & 0,47  \\ \hline
 \end{table}
 
 ## Conclusão
+
+<!-- TODO -->
+Concluímos que a distribuição de Box-Cox Cole and Green é superior graças ao *shape* uehauehahaeuhauheauaeh.
 
 
