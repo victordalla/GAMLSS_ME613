@@ -109,29 +109,35 @@ plot.gamlss <- function (x, xvar=NULL, parameters=NULL, ts=FALSE, summaries=TRUE
         } 
     # top left
     plot(fittedvalues , residx,
-         xlab = "Fitted Values",  
-         ylab = "Quantile Residuals", 
-         main = "Against Fitted Values",
+         xlab = "Valore ajustado",  
+         ylab = "Resíduo quantílico", 
+         main = "Resíduos vs valores ajustados",
          frame.plot = TRUE) 
+    abline(2,0,lty=2)
+    abline(-2,0,lty=2)
+    abline(0,0,lty=2)
     # top right  
     plot(xvar, residx, 
-         ylab = "Quantile Residuals",
+         ylab = "Resíduo quantílico", 
          xlab = xlabel, 
-         main = paste("Against ", xlabel), 
+         main = "Resíduos vs índices",
          frame.plot = TRUE) #  points(par(col="blue4"))
-     }    
+    abline(2,0,lty=2)
+    abline(-2,0,lty=2)
+    abline(0,0,lty=2)
+     }
     plot(density(residx), 
-         xlab = "Quantile. Residuals", 
-         ylab = "Density", 
-         main = "Density Estimate",
+         xlab = "Resíduo quantílico", 
+         ylab = "Densidade estimada", 
+         main = "Densidade estimada do resíduo",
          frame.plot = TRUE, 
          col="black", 
          lwd=0.4 ) #col="deepskyblue4", col="darkgreen", 
          rug(residx, col="red")
  
-    qqnorm.bands(residx, main = "Normal Q-Q Plot",
-            xlab = "Theoretical Quantiles",
-            ylab = "Sample Quantiles", 
+    qqnorm.bands(residx, main = "Q-Q Plot (Normal Padrão)",
+            xlab = "Quantil teórico",
+            ylab = "Quantil amostral", 
             plot.it = TRUE, 
             frame.plot = TRUE, 
             col="gray")
@@ -207,7 +213,7 @@ $$\epsilon_{i} \stackrel{\text{ind}}{\sim} \mathcal{N}\left(0, \sigma^{2}\right)
 
 - Problemas:
     - Heterocedasticidade
-    - Relação complexa (talvez não linear) entre as variáveis e suas interações
+    - Resposta positiva
     - Assimetria positiva da variável resposta
 
 ---
@@ -255,10 +261,11 @@ plot(
 
 ## Definição
 
-Sejam $\boldsymbol{\theta} = (\theta_1, ..., \theta_p)'$ os parâmetros da função de densidade (probabilidade) $f(y | \boldsymbol{\theta})$ computável e sua primeira derivada também, e sejam $y_i | \boldsymbol{\theta}, i = 1, ..., n$ respostas independentes.
+Seja $f(y | \boldsymbol{\theta}), \boldsymbol{\theta} = (\theta_1, ..., \theta_p)'$ a função de densidade (probabilidade) proposta para a resposta $Y$. Os únicos requerimentos que o GAMLSS faz para $f$ é que ela seja computável, a sua primeira derivada também e que $y_i | \boldsymbol{\theta}, i = 1, ..., n$ sejam independentes.
 
-Sejam $g_k, k = 1, ..., p$ funções de ligação conhecidas que relacionam os parâmetros com as observações. O modelo GAMLSS é:
+Sejam $g_k, k = 1, ..., p$ funções de ligação conhecidas que relacionam os parâmetros com os preditores. O modelo GAMLSS é:
 
+\vspace{-.5cm}
 \[
 g_{k}\left(\boldsymbol{\theta}_{k}\right)=\boldsymbol{\eta}_{k}=\mathbf{X}_{k} \boldsymbol{\beta}_{k}+\sum_{j=1}^{J_{k}} \mathbf{Z}_{j k} \boldsymbol{\gamma}_{j k}
 \]
@@ -266,25 +273,24 @@ g_{k}\left(\boldsymbol{\theta}_{k}\right)=\boldsymbol{\eta}_{k}=\mathbf{X}_{k} \
 - $\boldsymbol{\theta}_k = (\theta^1, ..., \theta^n)'$ e $\boldsymbol{\eta}_k$ (preditores) são vetores de tamanho $n$
 - $\mathbf{X}_k$ são matrizes $n \times J_k^\prime$ de planejamento fixas e $\boldsymbol{\beta}_k$ são vetores de parâmetros de tamanho $J_k^\prime$
 - $\mathbf{Z}_{j k}$ são matrizes $n \times q_{j k}$ de planejamento fixas e $\boldsymbol{\gamma}_{j k}$ é uma v.a. de dimensão $q_{j k}$
-- Observação: $J_k^, J_k\prime$ e $q_{j k}$ são determinados pela quantidade e definição das matrizes de planejamento
+- Observação: $J_k^, J_k\prime$ e $q_{j k}$ são determinados pelas matrizes de planejamento, que por sua vez são fixas e determinadas
 
 ---
 
 - Modelos Aditivos para Localização, Escala e Forma (GAMLSS em inglês) foi introduzido por Rigby & Stasinopoulos (2001, 2005) e Akantziliotou \textit{et al.} (2002)
-- Mais gerais:
   - A família de funções de densidade (probabilidade) para a resposta é mais geral que a família exponencial
   - É possível modelar todos os parâmetros da distribuição de $\mathbf{Y}$ de forma paramétrica, não paramétrica (suavizadores) ou por efeitos aleatórios
 
-- Geralmente são considerados no máximo quatro parâmetros: $\boldsymbol{\theta} = (\boldsymbol{\mu}, \boldsymbol{\sigma}, \boldsymbol{\nu}, \boldsymbol{\tau})$ sendo o primeiro de localização, o segundo de escala e os restantes de forma (assimetria e curtose, por exemplo).
+- Geralmente são considerados no máximo quatro parâmetros: $\boldsymbol{\theta} = (\boldsymbol{\mu}, \boldsymbol{\sigma}, \boldsymbol{\nu}, \boldsymbol{\tau})$ sendo o primeiro de localização, o segundo de escala e os restantes de forma (assimetria e curtose, por exemplo)
 - O modelo pode ser reduzido para $g_{k}\left(\boldsymbol{\theta}_{k}\right) = \boldsymbol{\eta}_{k} = \mathbf{X}_{k} \boldsymbol{\beta}_{k}$
 
 ---
 
 ## Diagnóstico
 
- - Resíduo quantílitico (resposta contínua): $\hat{r}_i = \Phi^{-1}(\hat{u}_i$, onde $\Phi^{-1}$ é a função quantil da normal padrão, $\hat{u}_i = F(y|\hat{\boldsymbol{\theta}})$ são os resíduos quantílicos e $F$ é a fda do modelo proposto para $Y$.
+ - Resíduo quantílitico (resposta contínua): $\hat{r}_i = \Phi^{-1}(\hat{u}_i)$, onde $\Phi^{-1}$ é a função quantil da normal padrão, $\hat{u}_i = F(y|\hat{\boldsymbol{\theta}})$ são os resíduos quantílicos e $F$ é a fda do modelo proposto para $Y$.
 
- - Segundo Stasinopoulos \textit{et. al} (2017, pg 419), o resíduo quantílitico normalizado tem sempre distribuição normal padrão quando o modelo para $Y$ é correto.
+ - Segundo Stasinopoulos \textit{et. al} (2017, pg 419), o resíduo quantílitico normalizado tem distribuição normal padrão quando o modelo para $Y$ é correto.
 
 -  Portanto, as ferramentas de diagnóstico do modelo serão as mesmas do caso normal (gráfico de densidade e QQ-plot), permitindo uma comparação direta entre os modelos.
 
@@ -294,7 +300,10 @@ g_{k}\left(\boldsymbol{\theta}_{k}\right)=\boldsymbol{\eta}_{k}=\mathbf{X}_{k} \
 # Modelando por GAMLSS (Modelo Gama)
 
 $$
-\mathbf{Y} \stackrel{\mathrm{ind}}{\sim} \text{Gamma}(\boldsymbol{\mu}, \boldsymbol{\sigma}), \quad f(y ; \mu, \sigma^{2})=\frac{y^{1 / \sigma^{2}-1} \exp \left(-\frac{y}{\sigma^{2} \mu}\right)}{(\sigma^{2} \mu)^{(1 / \sigma^{2})} \Gamma(1 / \sigma^{2})}
+\begin{aligned} 
+  \mathbf{Y} &\stackrel{\mathrm{ind}}{\sim} \text{Gamma}(\boldsymbol{\mu}, \boldsymbol{\sigma}), \quad y > 0, \mu > 0, \sigma^2 > 0 \\ 
+  &f(y ; \mu, \sigma^{2}) = \frac{y^{1 / \sigma^{2}-1} \exp \left(-\frac{y}{\sigma^{2} \mu}\right)}{(\sigma^{2} \mu)^{(1 / \sigma^{2})} \Gamma(1 / \sigma^{2})}
+\end{aligned}
 $$
 
 $$
@@ -320,19 +329,19 @@ gamma_model <- gamlss(rent ~ area + yearc + location + cheating,
 \label{tab:gamma_model}
 \scalebox{0.9} {
 \begin{tabular}{llcccc} \hline
-Parâmetro                    & Termo        & Estimativa & EP    & IC(95\%)         & p-valor \\ \hline
-$\mu$                        & (Intercepto) & -5,164     & 0,527 & (-5,888, -4,440) & \textless{}0,001 \\
-$\mu$                        & area         & 0,011      & 0,000 & (0,011, 0,012)   & \textless{}0,001 \\
-$\mu$                        & yearc        & 0,005      & 0,000 & (0,005, 0,006)   & \textless{}0,001 \\
-$\mu$                        & location2    & 0,097      & 0,011 & (0,076, 0,119)   & \textless{}0,001 \\
-$\mu$                        & location3    & 0,203      & 0,041 & (0,122, 0,283)   & \textless{}0,001 \\
-$\mu$                        & cheating1    & 0,281      & 0,024 & (0,234, 0,327)   & \textless{}0,001 \\
-$\sigma$                     & (Intercepto) & 10,116     & 1,220 & (9,392, 10,840)  & \textless{}0,001 \\
-$\sigma$                     & area         & 0,001      & 0,001 & (0,001, 0,002)   & 0,007            \\
-$\sigma$                     & yearc        & -0,006     & 0,001 & (-0,006, -0,005) & \textless{}0,001 \\
-$\sigma$                     & location2    & 0,081      & 0,026 & (0,060, 0,103)   & 0,002            \\
-$\sigma$                     & location3    & 0,244      & 0,080 & (0,164,  0,325)  & 0,002            \\
-$\sigma$                     & cheating1    & -0,200     & 0,044 & (-0,247, -0,154) & \textless{}0,001 \\ \hline
+Parâmetro                    & Termo        & Estimativa & EP               & IC(95\%)         & p-valor \\ \hline
+$\mu$                        & (Intercepto) & -5,164     & 0,527            & (-5,888, -4,440) & \textless{}0,001 \\
+$\mu$                        & area         & 0,011      & \textless{}0,000 & (0,011, 0,012)   & \textless{}0,001 \\
+$\mu$                        & yearc        & 0,005      & \textless{}0,000 & (0,005, 0,006)   & \textless{}0,001 \\
+$\mu$                        & location2    & 0,097      & 0,011            & (0,076, 0,119)   & \textless{}0,001 \\
+$\mu$                        & location3    & 0,203      & 0,041            & (0,122, 0,283)   & \textless{}0,001 \\
+$\mu$                        & cheating1    & 0,281      & 0,024            & (0,234, 0,327)   & \textless{}0,001 \\
+$\sigma$                     & (Intercepto) & 10,116     & 1,220            & (9,392, 10,840)  & \textless{}0,001 \\
+$\sigma$                     & area         & 0,001      & 0,001            & (0,001, 0,002)   & 0,007            \\
+$\sigma$                     & yearc        & -0,006     & 0,001            & (-0,006, -0,005) & \textless{}0,001 \\
+$\sigma$                     & location2    & 0,081      & 0,026            & (0,060, 0,103)   & 0,002            \\
+$\sigma$                     & location3    & 0,244      & 0,080            & (0,164,  0,325)  & 0,002            \\
+$\sigma$                     & cheating1    & -0,200     & 0,044            & (-0,247, -0,154) & \textless{}0,001 \\ \hline
 \end{tabular}
 }
 \end{table}
@@ -352,8 +361,9 @@ plot(
 
 ## Problemas
 
-- Distribuição dos resíduos quantílicos com assimetria negativa no gráfico da densidade estimada
-- Comportamento sistemático das caudas no QQ-plot
+- Modelagem da variância pode não ter sido boa (gráfico dos resíduos vs valores ajustados)
+- Distribuição dos resíduos quantílicos com assimetria negativa (gráfico da densidade estimada)
+- Comportamento sistemático das caudas (Q-Q Plot)
 
 ## Sugestões
 
@@ -398,21 +408,21 @@ boxcox_model <- gamlss(rent ~ area + yearc + location + cheating,
 \scalebox{0.9} {
 \begin{tabular}{llcccc}
 \hline
-Parâmetro & Termo        & Estimativa & EP    & IC(95\%)         & p-valor          \\ \hline
-$\mu$     & (Intercepto) & -7,017     & 0,505 & (-7,524, -6,511) & \textless{}0,001 \\
-$\mu$     & area         & 0,011      & 0,000 & (0,011, 0,012)   & \textless{}0,001 \\
-$\mu$     & yearc        & 0,006      & 0,000 & (0,006, 0,006)   & \textless{}0,001 \\
-$\mu$     & location2    & 0,095      & 0,010 & (0,074, 0,116)   & \textless{}0,001 \\
-$\mu$     & location3    & 0,202      & 0,036 & (0,127, 0,278)   & \textless{}0,001 \\
-$\mu$     & cheating1    & 0,277      & 0,024 & (0,230, 0,323)   & \textless{}0,001 \\
-$\sigma$  & (Intercepto) & 12,440     & 1,240 & (11,933, 12,947) & \textless{}0,001 \\
-$\sigma$  & area         & 0,001      & 0,001 & (0,001, 0,002)   & 0,008            \\
-$\sigma$  & yearc        & -0,007     & 0,001 & (-0,007, -0,007) & \textless{}0,001 \\
-$\sigma$  & location2    & 0,079      & 0,027 & (0,058, 0,100)   & 0,003            \\
-$\sigma$  & location3    & 0,202      & 0,082 & (0,127, 0,278)   & 0,014            \\
-$\sigma$  & cheating1    & -0,207     & 0,045 & (-0,254, -0,160) & \textless{}0,001 \\
-$\nu$     & (Intercepto) & -17,799    & 3,770 & (-18,306, -17,29)& \textless{}0,001 \\
-$\nu$     & yearc        & 0,009      & 0,002 & (0,009, 0,01)    & \textless{}0,001 \\ \hline
+Parâmetro & Termo        & Estimativa & EP               & IC(95\%)         & p-valor          \\ \hline
+$\mu$     & (Intercepto) & -7,017     & 0,505            & (-7,524, -6,511) & \textless{}0,001 \\
+$\mu$     & area         & 0,011      & \textless{}0,000 & (0,011, 0,012)   & \textless{}0,001 \\
+$\mu$     & yearc        & 0,006      & \textless{}0,000 & (0,006, 0,006)   & \textless{}0,001 \\
+$\mu$     & location2    & 0,095      & 0,010            & (0,074, 0,116)   & \textless{}0,001 \\
+$\mu$     & location3    & 0,202      & 0,036            & (0,127, 0,278)   & \textless{}0,001 \\
+$\mu$     & cheating1    & 0,277      & 0,024            & (0,230, 0,323)   & \textless{}0,001 \\
+$\sigma$  & (Intercepto) & 12,440     & 1,240            & (11,933, 12,947) & \textless{}0,001 \\
+$\sigma$  & area         & 0,001      & 0,001            & (0,001, 0,002)   & 0,008            \\
+$\sigma$  & yearc        & -0,007     & 0,001            & (-0,007, -0,007) & \textless{}0,001 \\
+$\sigma$  & location2    & 0,079      & 0,027            & (0,058, 0,100)   & 0,003            \\
+$\sigma$  & location3    & 0,202      & 0,082            & (0,127, 0,278)   & 0,014            \\
+$\sigma$  & cheating1    & -0,207     & 0,045            & (-0,254, -0,160) & \textless{}0,001 \\
+$\nu$     & (Intercepto) & -17,799    & 3,770            & (-18,306, -17,29)& \textless{}0,001 \\
+$\nu$     & yearc        & 0,009      & 0,002            & (0,009, 0,01)    & \textless{}0,001 \\ \hline
 \end{tabular}
 }
 \end{table}
@@ -461,9 +471,11 @@ Normal  & 7  & 39328 & 39370 & 0,47  \\ \hline
 \end{tabular}
 \end{table}
 
-## Conclusão
+<!-- ## Conclusão -->
 
-<!-- TODO -->
-Concluímos que a distribuição de Box-Cox Cole and Green é superior graças ao *shape* uehauehahaeuhauheauaeh.
-
-
+<!-- Concluímos que a distribuição de Box-Cox Cole and Green é superior graças ao *shape* uehauehahaeuhauheauaeh. -->
+<!-- FALA ISSO PRO GIUSEPPE OTARIO -->
+<!-- ̿̿ ̿̿ ̿̿ ̿'̿'\̵͇̿̿\з= 🗿 =ε/̵͇̿̿/’̿’̿ ̿ ̿̿ ̿̿ ̿̿   -->
+<!--     (   .  )   -->
+<!--     _// 🍆\\_   -->
+<!-- Ta-Em-CHoK kk -->
